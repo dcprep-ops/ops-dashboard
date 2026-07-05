@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ops Dashboard</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ops Dashboard">
+<meta name="application-name" content="Ops Dashboard">
+<meta name="theme-color" content="#1a3a5c">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Ops+Dashboard%22%2C%22short_name%22%3A%22Ops+Dashboard%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a3a5c%22%2C%22theme_color%22%3A%22%231a3a5c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+<meta property="og:title" content="Ops Dashboard">
+<meta property="og:description" content="DC Prep Operations Dashboard — SY 2026-27">
+<meta property="og:image" content="share.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #1a3a5c;
+  --navy2:  #243f5c;
+  --teal:   #0d9488;
+  --amber:  #f59e0b;
+  --red:    #dc2626;
+  --white:  #ffffff;
+  --bg:     #f1f3f5;
+  --card:   #ffffff;
+  --border: #e2e8f0;
+  --text:   #1e293b;
+  --muted:  #64748b;
+  --lt:     #f8fafc;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  background: var(--navy);
+  padding: 28px 40px 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.page-header-left { }
+.page-brand { font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 6px; }
+.page-title { font-size: 26px; font-weight: 500; color: #fff; }
+.page-meta { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 4px; }
+.page-date { font-size: 12px; color: rgba(255,255,255,.35); text-align: right; }
+
+/* ── NAV TABS ── */
+.nav-tabs {
+  background: var(--navy2);
+  padding: 0 40px;
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.nav-tab {
+  padding: 14px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.45);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  user-select: none;
+}
+.nav-tab:hover { color: rgba(255,255,255,.7); }
+.nav-tab.active { color: #fff; border-bottom-color: var(--teal); }
+
+/* ── MAIN CONTENT ── */
+.main { max-width: 800px; margin: 0 auto; padding: 32px 24px 60px; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 36px; }
+.section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--card);
+  border-radius: 10px;
+  border: 0.5px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.card-header {
+  padding: 14px 18px;
+  border-bottom: 0.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title { font-size: 15px; font-weight: 500; color: var(--navy); }
+.card-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.card-body { padding: 16px 18px; }
+
+/* ── COMPLIANCE GRID ── */
+.compliance-table { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+.compliance-table th {
+  background: var(--navy); color: rgba(255,255,255,.65);
+  font-size: 10px; font-weight: 500; padding: 7px 5px;
+  text-align: center; letter-spacing: .5px; white-space: nowrap;
+}
+.compliance-table th.campus-th { text-align: left; padding-left: 12px; width: 55px; }
+.compliance-table td { padding: 7px 5px; text-align: center; border-bottom: 0.5px solid var(--border); }
+.compliance-table td.campus-td { text-align: left; font-weight: 500; color: var(--navy); font-size: 12px; padding-left: 12px; white-space: nowrap; }
+.compliance-table tr:last-child td { border-bottom: none; }
+.compliance-table tr:nth-child(even) td { background: var(--lt); }
+.dot { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+.dot-ok     { background: var(--teal); }
+.dot-slow   { background: var(--amber); }
+.dot-none   { background: var(--border); }
+.dot-future { background: transparent; border: 0.5px solid var(--border); }
+
+/* ── LEGEND ── */
+.legend { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+.leg { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+
+/* ── LAST DRILL CARDS ── */
+.drill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.drill-card { border: 0.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+.drill-card-header { background: var(--lt); padding: 9px 13px; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.drill-campus { font-size: 13px; font-weight: 500; color: var(--navy); }
+.drill-type-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+.evac-badge { background: #e1f5ee; color: #085041; }
+.lock-badge { background: #eff6ff; color: #1e40af; }
+.drill-card-body { padding: 12px 14px; }
+.stat-line { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; line-height: 1.4; }
+.stat-line:last-child { border-bottom: none; }
+.stat-key { color: var(--muted); flex-shrink: 0; }
+.stat-val { font-weight: 500; color: var(--text); text-align: right; overflow-wrap: break-word; word-break: break-word; max-width: 160px; }
+.stat-val.ok { color: var(--teal); }
+.stat-val.warn { color: var(--amber); }
+.stat-val.flag { color: var(--red); }
+.no-drill { color: var(--muted); font-size: 12px; font-style: italic; padding: 6px 0; }
+
+/* ── ARRIVAL SECTION ── */
+.cluster-block { margin-bottom: 24px; }
+.cluster-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cluster-name { font-size: 15px; font-weight: 500; color: var(--navy); }
+.cluster-pct { font-size: 13px; font-weight: 500; }
+.cluster-prev { font-size: 11px; color: var(--muted); margin-left: 6px; }
+
+.period-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.period-box { background: var(--lt); border-radius: 8px; padding: 12px 14px; border: 0.5px solid var(--border); }
+.period-box.current { border-color: var(--teal); }
+.period-label { font-size: 10px; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.period-label.current { color: var(--teal); }
+
+.rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.rating-lbl { font-size: 11px; color: var(--muted); width: 72px; flex-shrink: 0; }
+.bar-wrap { flex: 1; background: var(--border); border-radius: 3px; height: 8px; overflow: hidden; }
+.bar { height: 100%; border-radius: 3px; }
+.bar-strong { background: var(--teal); }
+.bar-ok     { background: #94a3b8; }
+.bar-needs  { background: var(--amber); }
+.pct-curr { font-size: 13px; font-weight: 500; color: var(--text); width: 36px; text-align: right; flex-shrink: 0; }
+.pct-prior { font-size: 11px; color: #cbd5e1; width: 50px; text-align: right; flex-shrink: 0; }
+.prior-key { font-size: 10px; color: #cbd5e1; margin-top: 4px; }
+
+.trend-line { display: flex; align-items: center; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+.trend-arrow { font-size: 13px; }
+.trend-txt { font-size: 11px; color: var(--muted); }
+.trend-verdict { font-size: 11px; font-weight: 500; margin-left: auto; }
+.verdict-better { color: var(--teal); }
+.verdict-worse  { color: var(--red); }
+.verdict-flat   { color: var(--muted); }
+
+/* Flags */
+.flags-title { font-size: 10px; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin: 10px 0 7px; }
+.flag-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 0.5px solid var(--lt); font-size: 12px; }
+.flag-item:last-child { border-bottom: none; }
+.flag-name { color: var(--text); flex: 1; padding-right: 10px; }
+.flag-pct { font-weight: 500; color: var(--red); flex-shrink: 0; }
+
+/* Role strip */
+.role-strip { display: flex; gap: 8px; margin-top: 10px; }
+.role-pill { flex: 1; background: var(--lt); border-radius: 8px; padding: 8px 10px; border: 0.5px solid var(--border); text-align: center; }
+.role-pill-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+.role-pill-val { font-size: 13px; font-weight: 500; color: var(--navy); }
+
+/* Session divider */
+.session-divider { border: none; border-top: 0.5px solid var(--border); margin: 16px 0; }
+.cluster-divider  { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+.session-label { font-size: 11px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+/* Low data */
+.low-data { background: #fef9c3; border: 0.5px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 12px; color: #854d0e; line-height: 1.6; }
+
+/* ── CUSTODIAL ── */
+.sparkline { display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-bottom: 6px; }
+.spark-bar { border-radius: 2px 2px 0 0; flex: 1; transition: height .3s; }
+.spark-good { background: var(--teal); }
+.spark-mid  { background: #94a3b8; }
+.spark-low  { background: var(--amber); }
+
+.improve-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 0.5px solid var(--lt); }
+.improve-item:last-child { border-bottom: none; }
+.improve-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.improve-name { font-size: 12px; color: var(--text); flex: 1; }
+.improve-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.badge-focus    { background: #fef9c3; color: #854d0e; }
+.badge-stable   { background: var(--lt); color: var(--muted); border: 0.5px solid var(--border); }
+.badge-improving{ background: #f0fdf4; color: #166534; }
+.improve-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 10px; }
+.flag-rate-val { font-size: 13px; font-weight: 500; color: var(--red); }
+.prior-rate-val { font-size: 11px; color: #cbd5e1; }
+
+.notes-box { background: var(--lt); border-radius: 8px; padding: 12px 14px; border: 0.5px solid var(--border); margin-top: 12px; }
+.notes-title { font-size: 10px; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.note-item { font-size: 12px; color: var(--muted); padding: 4px 0; border-bottom: 0.5px solid var(--border); display: flex; gap: 8px; line-height: 1.5; }
+.note-item:last-child { border-bottom: none; }
+.note-campus { font-weight: 500; color: var(--navy); flex-shrink: 0; }
+
+/* ── LOADING / ERROR ── */
+.loading { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+.error-box { background: #fef2f2; border: 0.5px solid #fecaca; border-radius: 8px; padding: 16px; color: #991b1b; font-size: 13px; margin: 24px 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .page-header { padding: 20px 16px 16px; }
+  .nav-tabs { padding: 0 12px; }
+  .main { padding: 20px 12px 40px; }
+  .drill-grid { grid-template-columns: 1fr; }
+  .period-cols { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="page-brand">DC Prep Operations</div>
+    <div class="page-title">Operations Dashboard</div>
+    <div class="page-meta" id="meta-line">Loading…</div>
+  </div>
+  <div class="page-date" id="page-date"></div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showTab('drills')">Drills</div>
+  <div class="nav-tab" onclick="showTab('arrival')">Arrival &amp; Dismissal</div>
+  <div class="nav-tab" onclick="showTab('custodial')">Custodial</div>
+</div>
+
+<div class="main">
+  <div id="loading" class="loading">Loading dashboard data…</div>
+  <div id="error"  style="display:none"></div>
+
+  <!-- ══ DRILLS TAB ══ -->
+  <div id="tab-drills" style="display:none">
+
+    <div class="section">
+      <div class="section-title">Monthly compliance — SY 2025–26</div>
+      <div class="legend">
+        <div class="leg"><span class="dot dot-ok" style="width:18px;height:18px;font-size:10px">✓</span> Completed, under 10 min</div>
+        <div class="leg"><span class="dot dot-slow" style="width:18px;height:18px;font-size:10px">✓</span> Completed, over 10 min</div>
+        <div class="leg"><span class="dot dot-none" style="width:18px;height:18px;font-size:10px;color:#94a3b8">!</span> Not completed</div>
+        <div class="leg"><span class="dot dot-future" style="width:18px;height:18px"></span> Not yet due</div>
+      </div>
+
+      <div class="card">
+        <div style="padding:4px 0 0;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.6);background:var(--navy);text-align:center;padding:8px">EVACUATION</div>
+        <table class="compliance-table" id="evac-table"></table>
+        <div style="padding:4px 0 0;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.6);background:var(--navy2);text-align:center;padding:8px">LOCKDOWN</div>
+        <table class="compliance-table" id="lock-table"></table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Most recent drill — each campus</div>
+      <div class="drill-grid" id="last-drills"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ ARRIVAL TAB ══ -->
+  <div id="tab-arrival" style="display:none">
+    <div id="arrival-content"></div>
+  </div>
+
+  <!-- ══ CUSTODIAL TAB ══ -->
+  <div id="tab-custodial" style="display:none">
+    <div id="custodial-content"></div>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG — paste your Apps Script Web App URL here ──────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPbhFWpzKX6S6seb1c0QKplVM22LjZG6bkGMBnTNopry6dDr5YGtffKKR3EsFQ77n5BQ/exec';
+
+// ── TAB NAVIGATION ─────────────────────────────────────────────────────────
+function showTab(name) {
+  ['drills','arrival','custodial'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===name ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-tab').forEach((el, i) => {
+    el.classList.toggle('active', ['drills','arrival','custodial'][i] === name);
+  });
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function el(tag, cls, html) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+
+function trendClass(curr, prior) {
+  if (curr === null || prior === null) return 'verdict-flat';
+  const d = curr - prior;
+  return d >= 5 ? 'verdict-better' : d <= -5 ? 'verdict-worse' : 'verdict-flat';
+}
+function trendLabel(curr, prior) {
+  if (curr === null || prior === null) return '—';
+  const d = curr - prior;
+  if (d >= 5)  return '↑ Getting better';
+  if (d <= -5) return '↓ Watch closely';
+  return '→ Stable';
+}
+function trendArrow(curr, prior) {
+  if (curr === null || prior === null) return '→';
+  return curr - prior >= 5 ? '↑' : curr - prior <= -5 ? '↓' : '→';
+}
+function sparkClass(pct) {
+  if (pct === null) return 'spark-mid';
+  return pct >= 80 ? 'spark-good' : pct >= 65 ? 'spark-mid' : 'spark-low';
+}
+
+// ── RENDER DRILLS ──────────────────────────────────────────────────────────
+function renderDrills(data) {
+  const months = data.months;
+  const today  = new Date();
+
+  function buildTable(tableId, drillType) {
+    const tbl = document.getElementById(tableId);
+    // Header row
+    const hr = tbl.insertRow();
+    const th0 = document.createElement('th'); th0.className = 'campus-th'; th0.textContent = 'Campus'; hr.appendChild(th0);
+    months.forEach(m => {
+      const th = document.createElement('th'); th.textContent = m.label; hr.appendChild(th);
+    });
+
+    data.compliance.forEach((row, ri) => {
+      const tr = tbl.insertRow();
+      const td0 = tr.insertCell(); td0.className = 'campus-td'; td0.textContent = row.campus;
+      const statuses = drillType === 'evac' ? row.evac : row.lock;
+      statuses.forEach((status, mi) => {
+        const td = tr.insertCell();
+        const mn = months[mi].num;
+        const yr = mn >= 8 ? data.syStart : data.syStart + 1;
+        const isPast = new Date(yr, mn-1, 1) < today;
+        if (!isPast) {
+          td.innerHTML = '<span class="dot dot-future"></span>';
+        } else if (status === 'ok') {
+          td.innerHTML = '<span class="dot dot-ok">✓</span>';
+        } else if (status === 'slow') {
+          td.innerHTML = '<span class="dot dot-slow">✓</span>';
+        } else {
+          td.innerHTML = '<span class="dot dot-none" style="color:#94a3b8;font-size:13px">!</span>';
+        }
+      });
+    });
+  }
+
+  buildTable('evac-table', 'evac');
+  buildTable('lock-table', 'lock');
+
+  // Last drills
+  const grid = document.getElementById('last-drills');
+  data.lastDrills.forEach(campus => {
+    ['evac','lock'].forEach(type => {
+      const drill = type === 'evac' ? campus.evac : campus.lock;
+      const label = type === 'evac' ? 'Evacuation' : 'Lockdown';
+      const badgeCls = type === 'evac' ? 'evac-badge' : 'lock-badge';
+      const div = el('div','drill-card');
+      if (!drill) {
+        div.innerHTML = `
+          <div class="drill-card-header">
+            <span class="drill-campus">${campus.campus}</span>
+            <span class="drill-type-badge ${badgeCls}">${label}</span>
+          </div>
+          <div class="drill-card-body"><div class="no-drill">No drill logged</div></div>`;
+      } else {
+        const durClass = drill.under10 ? 'ok' : 'warn';
+        const flagHtml = drill.flags
+          ? `<div class="stat-line"><span class="stat-key">Flags</span><span class="stat-val flag">${drill.flags}</span></div>`
+          : `<div class="stat-line"><span class="stat-key">Flags</span><span class="stat-val">None</span></div>`;
+        div.innerHTML = `
+          <div class="drill-card-header">
+            <span class="drill-campus">${campus.campus}</span>
+            <span class="drill-type-badge ${badgeCls}">${label}</span>
+          </div>
+          <div class="drill-card-body">
+            <div class="stat-line"><span class="stat-key">Date</span><span class="stat-val">${drill.date}</span></div>
+            <div class="stat-line"><span class="stat-key">Duration</span><span class="stat-val ${durClass}">${drill.duration} ${drill.under10 ? '✓' : '— over goal'}</span></div>
+            ${flagHtml}
+            ${drill.notes ? `<div class="stat-line"><span class="stat-key">Notes</span><span class="stat-val">${drill.notes}</span></div>` : ''}
+          </div>`;
+      }
+      grid.appendChild(div);
+    });
+  });
+}
+
+// ── RENDER ARRIVAL ─────────────────────────────────────────────────────────
+function renderArrival(data, window) {
+  const container = document.getElementById('arrival-content');
+  container.innerHTML = `<p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px">
+    Last ${window} days vs. prior ${window} days. Arrival = before noon, Dismissal = noon onward.</p>`;
+
+  data.forEach((cluster, ci) => {
+    if (ci > 0) container.appendChild(el('hr','cluster-divider'));
+    const block = el('div','cluster-block');
+    block.innerHTML = `<div class="cluster-header">
+      <span class="cluster-name">${cluster.cluster}</span>
+      <span style="font-size:11px;color:var(--muted)">${cluster.schools.join(' & ')}</span>
+    </div>`;
+
+    ['arrival','dismissal'].forEach((session, si) => {
+      if (si > 0) block.appendChild(el('hr','session-divider'));
+      const sData  = cluster[session];
+      const curr   = sData.current;
+      const prior  = sData.prior;
+      const label  = session === 'arrival' ? 'Arrival' : 'Dismissal';
+
+      const sessDiv = el('div');
+      sessDiv.innerHTML = `<div class="session-label" style="color:${session==='arrival'?'#085041':'#1e40af'}">${label}</div>`;
+
+      if (!curr || curr.n < 5) {
+        const n = curr ? curr.n : 0;
+        const warn = el('div','low-data');
+        warn.textContent = n === 0
+          ? `No ${session} observations in the last ${window} days.`
+          : `Only ${n} observation${n>1?'s':''} in the last ${window} days — not enough to report trends reliably.`;
+        sessDiv.appendChild(warn);
+      } else {
+        const cols = el('div','period-cols');
+        const priorBox = el('div','period-box');
+        const currBox  = el('div','period-box current');
+
+        function ratingRows(box, ratings, showPrior) {
+          if (!ratings) { box.innerHTML = '<div style="font-size:12px;color:var(--muted);font-style:italic">No data</div>'; return; }
+          ['Strong','OK','Needs work'].forEach(rating => {
+            const key = rating === 'Needs work' ? 'needsWork' : rating.toLowerCase();
+            const pct = ratings[key] || 0;
+            const barClass = rating === 'Strong' ? 'bar-strong' : rating === 'OK' ? 'bar-ok' : 'bar-needs';
+            const row = el('div','rating-row');
+            row.innerHTML = `
+              <span class="rating-lbl">${rating}</span>
+              <div class="bar-wrap"><div class="bar ${barClass}" style="width:${pct}%"></div></div>
+              <span class="pct-curr">${pct}%</span>`;
+            box.appendChild(row);
+          });
+        }
+
+        priorBox.innerHTML = `<div class="period-label">Prior ${window} days</div>`;
+        ratingRows(priorBox, prior, false);
+        if (prior) priorBox.innerHTML += `<div class="n-label" style="font-size:10px;color:var(--muted);margin-top:4px">n = ${prior.n}</div>`;
+
+        currBox.innerHTML = `<div class="period-label current">Last ${window} days</div>`;
+        ratingRows(currBox, curr, true);
+        currBox.innerHTML += `<div class="n-label" style="font-size:10px;color:var(--muted);margin-top:4px">n = ${curr.n}</div>`;
+
+        cols.appendChild(priorBox);
+        cols.appendChild(currBox);
+        sessDiv.appendChild(cols);
+
+        // Trend
+        const currStrong  = curr  ? curr.strong  : null;
+        const priorStrong = prior ? prior.strong : null;
+        const trendDiv = el('div','trend-line');
+        trendDiv.innerHTML = `
+          <span class="trend-arrow">${trendArrow(currStrong, priorStrong)}</span>
+          <span class="trend-txt">Strong ratings</span>
+          <span class="trend-verdict ${trendClass(currStrong, priorStrong)}">${trendLabel(currStrong, priorStrong)}</span>`;
+        sessDiv.appendChild(trendDiv);
+
+        // Flags
+        if (sData.flags && sData.flags.length) {
+          const flagsTitle = el('div','flags-title', `Most flagged — ${label.toLowerCase()}, last ${window} days`);
+          sessDiv.appendChild(flagsTitle);
+          sData.flags.forEach(f => {
+            const row = el('div','flag-item');
+            row.innerHTML = `<span class="flag-name">${f.item}</span><span class="flag-pct">${f.rate}%</span>`;
+            sessDiv.appendChild(row);
+          });
+        }
+
+        // Role breakdown
+        if (sData.roles && sData.roles.length) {
+          const strip = el('div','role-strip');
+          sData.roles.forEach(r => {
+            const pill = el('div','role-pill');
+            pill.innerHTML = `<div class="role-pill-label">${r.role}</div><div class="role-pill-val">${r.strong !== null ? r.strong+'%' : '—'}</div>`;
+            strip.appendChild(pill);
+          });
+          sessDiv.appendChild(strip);
+        }
+      }
+      block.appendChild(sessDiv);
+    });
+    container.appendChild(block);
+  });
+}
+
+// ── RENDER CUSTODIAL ───────────────────────────────────────────────────────
+function renderCustodial(data, window) {
+  const container = document.getElementById('custodial-content');
+  container.innerHTML = `<p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:24px">
+    % checked = share of items completed. Where we can improve = items flagged most often in the last 30 days vs. the prior 30.</p>`;
+
+  // Sparklines row
+  const secTitle = el('div','section-title','% items checked — monthly trend');
+  container.appendChild(secTitle);
+
+  const trendsRow = el('div','card');
+  const trendsBody = el('div','card-body');
+  trendsBody.style.display = 'grid';
+  trendsBody.style.gridTemplateColumns = 'repeat(3,1fr)';
+  trendsBody.style.gap = '16px';
+
+  data.clusters.forEach(cl => {
+    const box = el('div');
+    const curr = cl.currentPct;
+    const prev = cl.priorPct;
+    const arrow = curr - prev >= 3 ? '↑' : curr - prev <= -3 ? '↓' : '→';
+    const arrowColor = curr - prev >= 3 ? 'var(--teal)' : curr - prev <= -3 ? 'var(--amber)' : 'var(--muted)';
+
+    const sparkHtml = cl.trend.map(m => {
+      const h = m.pct !== null ? Math.max(20, m.pct) : 30;
+      const cls = sparkClass(m.pct);
+      return `<div class="spark-bar ${cls}" style="height:${h}%" title="${m.label}: ${m.pct !== null ? m.pct+'%' : 'no data'}"></div>`;
+    }).join('');
+
+    box.innerHTML = `
+      <div style="font-size:11px;font-weight:500;color:var(--navy);margin-bottom:8px">${cl.cluster}</div>
+      <div class="sparkline">${sparkHtml}</div>
+      <div style="font-size:13px;font-weight:500;color:var(--navy)">${curr}% <span style="font-size:11px;color:var(--muted);font-weight:400">this month</span> <span style="color:${arrowColor};font-size:11px;font-weight:600">${arrow}</span></div>`;
+    trendsBody.appendChild(box);
+  });
+  trendsRow.appendChild(trendsBody);
+  container.appendChild(trendsRow);
+
+  // Per-cluster blocks
+  const secTitle2 = el('div','section-title','Where we can improve');
+  secTitle2.style.marginTop = '24px';
+  container.appendChild(secTitle2);
+
+  data.clusters.forEach((cl, ci) => {
+    if (ci > 0) container.appendChild(el('hr','cluster-divider'));
+    const block = el('div','cluster-block');
+    const curr = cl.currentPct; const prev = cl.priorPct;
+    const arrow = curr - prev >= 3 ? '↑' : curr - prev <= -3 ? '↓' : '→';
+    const pctColor = curr >= 75 ? 'var(--teal)' : curr >= 60 ? 'var(--amber)' : 'var(--red)';
+
+    block.innerHTML = `
+      <div class="cluster-header">
+        <div>
+          <div class="cluster-name">${cl.cluster}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${cl.schools.join(' & ')} &nbsp;·&nbsp; ${cl.n} walkthroughs in the last 30 days</div>
+        </div>
+        <div style="text-align:right">
+          <span class="cluster-pct" style="color:${pctColor}">${curr}% checked</span>
+          <span class="cluster-prev">${arrow} from ${prev}%</span>
+        </div>
+      </div>`;
+
+    if (cl.flags && cl.flags.length) {
+      const ft = el('div','flags-title','Most flagged — last 30 days vs. prior 30');
+      block.appendChild(ft);
+      cl.flags.forEach(f => {
+        const row = el('div','improve-item');
+        const badgeCls = f.trend === 'focus' ? 'badge-focus' : f.trend === 'improving' ? 'badge-improving' : 'badge-stable';
+        const badgeLabel = f.trend === 'focus' ? 'Focus area' : f.trend === 'improving' ? 'Improving' : 'Stable';
+        row.innerHTML = `
+          <div class="improve-left">
+            <span class="improve-name">${f.item}</span>
+            <span class="improve-badge ${badgeCls}">${badgeLabel}</span>
+          </div>
+          <div class="improve-right">
+            <span class="flag-rate-val">${f.curr}%</span>
+            <span class="prior-rate-val">${f.prior}% prior</span>
+          </div>`;
+        block.appendChild(row);
+      });
+    }
+
+    // Roles
+    if (cl.roles && cl.roles.some(r => r.pct !== null)) {
+      const strip = el('div','role-strip');
+      strip.style.marginTop = '12px';
+      cl.roles.forEach(r => {
+        const pill = el('div','role-pill');
+        pill.innerHTML = `<div class="role-pill-label">${r.role}</div><div class="role-pill-val">${r.pct !== null ? r.pct+'%' : '—'}</div>`;
+        strip.appendChild(pill);
+      });
+      block.appendChild(strip);
+    }
+    container.appendChild(block);
+  });
+
+  // Notes
+  if (data.notes && data.notes.length) {
+    const nb = el('div','notes-box');
+    nb.innerHTML = '<div class="notes-title">Recent walkthrough notes</div>';
+    data.notes.forEach(n => {
+      const row = el('div','note-item');
+      row.innerHTML = `<span class="note-campus">${n.campus}:</span><span>${n.note}</span>`;
+      nb.appendChild(row);
+    });
+    container.appendChild(nb);
+  }
+}
+
+// ── LOAD DATA ──────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res  = await fetch(SCRIPT_URL + '?view=ops');
+    const data = await res.json();
+
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('meta-line').textContent =
+      `${data.window}-day window · Generated ${data.generated}`;
+    document.getElementById('page-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+    renderDrills(data.drills);
+    renderArrival(data.arrival, data.window);
+    renderCustodial(data.custodial, data.window);
+
+    showTab('drills');
+  } catch(err) {
+    document.getElementById('loading').style.display = 'none';
+    const errBox = document.getElementById('error');
+    errBox.style.display = '';
+    errBox.innerHTML = `<div class="error-box">
+      <strong>Could not load dashboard data.</strong><br>
+      ${err.message}<br><br>
+      Make sure the Apps Script URL is set correctly and the deployment is active.
+    </div>`;
+    showTab('drills');
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
