@@ -785,7 +785,8 @@ Rules:
       resultEl.innerHTML = html;
     }
   } catch(err) {
-    resultEl.innerHTML = '<div class="notes-none">Could not analyze notes — try again.</div>';
+    console.error("analyzeNotes error:", err);
+    resultEl.innerHTML = `<div class="notes-none">Error: ${err.message}</div>`;
   }
 
   btnEl.classList.remove('loading');
