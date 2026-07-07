@@ -686,7 +686,10 @@ function renderCustodial(data) {
 // ── LOAD DATA ──────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const res  = await fetch(SCRIPT_URL + '?view=ops');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    const res  = await fetch(SCRIPT_URL + '?view=ops', { signal: controller.signal });
+    clearTimeout(timeout);
     const data = await res.json();
 
     if (data.error) throw new Error(data.error);
@@ -696,19 +699,20 @@ async function loadData() {
     const dateStr = today.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
     document.getElementById('meta-line').textContent = dateStr;
 
-    if (data.drills && data.drills.months) renderDrills(data.drills);
-    if (data.arrival) renderArrival(data.arrival, data.window);
-    if (data.custodial) renderCustodial(data.custodial);
+    try { if (data.drills && data.drills.months) renderDrills(data.drills); } catch(e) { console.error('renderDrills failed:', e); }
+    try { if (data.arrival) renderArrival(data.arrival, data.window); } catch(e) { console.error('renderArrival failed:', e); }
+    try { if (data.custodial) renderCustodial(data.custodial); } catch(e) { console.error('renderCustodial failed:', e); }
 
     showTab('drills');
   } catch(err) {
     document.getElementById('loading').style.display = 'none';
     const errBox = document.getElementById('error');
     errBox.style.display = '';
+    const isTimeout = err.name === 'AbortError';
     errBox.innerHTML = `<div class="error-box">
       <strong>Could not load dashboard data.</strong><br>
-      ${err.message}<br><br>
-      Make sure the Apps Script URL is set correctly and the deployment is active.
+      ${isTimeout ? 'Request timed out — the Apps Script may be slow or unavailable.' : err.message}<br><br>
+      Try refreshing. If the problem persists, check that the Apps Script is deployed and the URL is correct.
     </div>`;
     showTab('drills');
   }
