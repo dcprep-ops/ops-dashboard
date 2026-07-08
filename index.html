@@ -411,12 +411,12 @@ function renderDrills(data) {
           : [];
         const flagHtml = flagLines.length
           ? `<div class="stat-line" style="align-items:flex-start">
-               <span class="stat-key">Flags</span>
+               <span class="stat-key">Improvement opportunities</span>
                <span class="stat-val flag" style="display:flex;flex-direction:column;gap:3px">
-                 ${flagLines.map(f => `<span>${f}</span>`).join('')}
+                 ${flagLines.map(f => `<span>${translateDrillFlag(f)}</span>`).join('')}
                </span>
              </div>`
-          : `<div class="stat-line"><span class="stat-key">Flags</span><span class="stat-val">None</span></div>`;
+          : `<div class="stat-line"><span class="stat-key">Improvement opportunities</span><span class="stat-val" style="color:var(--teal)">None flagged</span></div>`;
         div.innerHTML = `
           <div class="drill-card-header">
             <span class="drill-campus">${campus.campus}</span>
@@ -521,15 +521,10 @@ function renderArrival(data, window) {
 
         const nLabel = el('div','n-label');
         nLabel.style.cssText = 'font-size:10px;color:var(--muted);margin-bottom:8px';
-        nLabel.textContent = `n = ${curr.n} (last)${prior ? ' · n = '+prior.n+' (prior)' : ''}`;
+        const lowTag = isLowData ? ' &nbsp;⚠ low volume' : '';
+        nLabel.innerHTML = `n = ${curr.n} (last ${window} days)${lowTag}${prior ? ' &nbsp;·&nbsp; n = '+prior.n+' (prior '+window+' days)' : ''}`;
+        if (isLowData) nLabel.style.color = '#b45309';
         sessDiv.appendChild(nLabel);
-
-        // Low volume note
-        if (isLowData) {
-          const lowNote = el('div','low-data-inline');
-          lowNote.textContent = `Low volume: only ${curr.n} observation${curr.n>1?'s':''} in the last ${window} days — interpret with caution.`;
-          sessDiv.appendChild(lowNote);
-        }
 
         if (sData.flags && sData.flags.length) {
           const flagsTitle = el('div','flags-title', `Most flagged — ${label.toLowerCase()}, last ${window} days`);
@@ -623,7 +618,7 @@ function renderCustodial(data) {
       </div>`;
 
     if (cl.flags && cl.flags.length) {
-      const ft = el('div','flags-title',`Most flagged — last ${custWindow} days vs. prior ${custWindow}`);
+      const ft = el('div','flags-title',`Improvement opportunities — last ${custWindow} days`);
       block.appendChild(ft);
       cl.flags.forEach(f => {
         const row = el('div','improve-item');
@@ -776,6 +771,33 @@ function makeNotesBtn(tabName, getNotes) {
   wrap.appendChild(result);
   return wrap;
 }
+
+const DRILL_FLAG_LABELS = {
+  'All classes exited to correct locations':     'Classes exiting to correct locations',
+  'Students were silent during evacuation':      'Student behavior during evacuation',
+  'All exits used appropriately':                'Exit usage during evacuation',
+  'Teachers positioned correctly mid-line':      'Teacher positioning during evacuation',
+  'Any door / stairwell / alarm issues?':        'Door, stairwell, or alarm issues noted',
+  'All classroom doors locked promptly':         'Locking classroom doors promptly',
+  'All window blinds / coverings down':          'Getting window blinds/coverings down',
+  'Hallways clear within 60 seconds':            'Clearing hallways within 60 seconds',
+  'Any door / lock / blind issues?':             'Door, lock, or blind issues noted',
+};
+function translateDrillFlag(f) { return DRILL_FLAG_LABELS[f] || f; }
+
+const AD_FLAG_LABELS = {
+  'Crossing guard present':                                        'Crossing guard coverage',
+  'Arrival / dismissal zones free of obstructions':                'Keeping arrival/dismissal zones clear',
+  'No unauthorized vehicles in student loading zones':             'Unauthorized vehicles in student loading zones',
+  'All staff members at duty posts':                               'Staff coverage at duty posts',
+  'Staff members attentive — not on phones':                       'Staff attentiveness during transitions',
+  'Staff behaviors support positive student behaviors and transitions': 'Staff behaviors during transitions',
+  'Staff positioned to maximize visibility of students':           'Staff positioning for student visibility',
+  'Students moving with purpose, minimal crowding':                'Student movement and crowding',
+  'Drop-off / pick-up line moving efficiently':                    'Drop-off / pick-up line efficiency',
+  'Students needing support identified and assisted promptly':     'Identifying and assisting students who need support',
+};
+function translateADFlag(f) { return AD_FLAG_LABELS[f] || f; }
 
 </script>
 </body>
