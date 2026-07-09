@@ -257,8 +257,8 @@ body {
 </div>
 
 <div class="nav-tabs">
-  <div class="nav-tab active" onclick="showTab('drills')">Drills</div>
-  <div class="nav-tab" onclick="showTab('arrival')">Arrival &amp; Dismissal</div>
+  <div class="nav-tab active" onclick="showTab('arrival')">Arrival &amp; Dismissal</div>
+  <div class="nav-tab" onclick="showTab('drills')">Drills</div>
   <div class="nav-tab" onclick="showTab('custodial')">Custodial</div>
 </div>
 
@@ -315,7 +315,7 @@ function showTab(name) {
     document.getElementById('tab-'+t).style.display = t===name ? '' : 'none';
   });
   document.querySelectorAll('.nav-tab').forEach((el, i) => {
-    el.classList.toggle('active', ['drills','arrival','custodial'][i] === name);
+    el.classList.toggle('active', ['arrival','drills','custodial'][i] === name);
   });
 }
 
@@ -685,7 +685,7 @@ async function loadData() {
     try { if (data.arrival) renderArrival(data.arrival, data.window); } catch(e) { console.error('renderArrival failed:', e); }
     try { if (data.custodial) renderCustodial(data.custodial); } catch(e) { console.error('renderCustodial failed:', e); }
 
-    showTab('drills');
+    showTab('arrival');
   } catch(err) {
     document.getElementById('loading').style.display = 'none';
     const errBox = document.getElementById('error');
@@ -696,7 +696,7 @@ async function loadData() {
       ${isTimeout ? 'Request timed out — the Apps Script may be slow or unavailable.' : err.message}<br><br>
       Try refreshing. If the problem persists, check that the Apps Script is deployed and the URL is correct.
     </div>`;
-    showTab('drills');
+    showTab('arrival');
   }
 }
 
