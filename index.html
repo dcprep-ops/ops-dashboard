@@ -363,25 +363,32 @@ function renderDrills() {
   const CAMPUSES = ['AEC','AMC','BEC','BMC','EEC','EMC'];
   let html = '';
 
-  CAMPUSES.forEach(campus => {
+  CAMPUSES.forEach((campus, ci) => {
     const comp = (OPS.drills?.compliance || []).find(d => d.campus === campus);
     const last = (OPS.drills?.lastDrills  || []).find(d => d.campus === campus);
 
-    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:24px 0 14px">${campus}</div>`;
-    html += `<div class="section"><div class="drill-type-label">Evacuation</div>
+    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:${ci===0?'4px':' 40px'} 0 14px">${campus}</div>`;
+
+    // Evacuation — own card
+    html += `<div class="section" style="margin-bottom:10px">
+      <div class="drill-type-label">Evacuation</div>
       <div class="month-row">${dots(comp?.evac)}</div>
-      <div class="drill-type-label" style="margin-top:14px">Lockdown</div>
+    </div>`;
+
+    // Lockdown — own card
+    html += `<div class="section" style="margin-bottom:10px">
+      <div class="drill-type-label">Lockdown</div>
       <div class="month-row">${dots(comp?.lock)}</div>
     </div>`;
 
-    html += `<div class="section"><div class="section-title">Most recent drills</div>`;
+    // Most recent — outside any card outline, just a label + stat lines
+    html += `<div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px">Most recent drills</div>`;
     ['evac','lock'].forEach(type => {
       const drill = last?.[type];
       const label = type === 'evac' ? 'Evacuation' : 'Lockdown';
-      html += `<div class="last-drill-card" style="margin-bottom:10px">
-        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:8px">${label}</div>`;
+      html += `<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">${label}</div>`;
       if (!drill) {
-        html += `<div class="no-data">No drill logged yet</div>`;
+        html += `<div class="no-data" style="margin-bottom:12px">No drill logged yet</div>`;
       } else {
         const dc = drill.under10 ? 'ok' : 'warn';
         const flagLines = drill.flags ? drill.flags.split(';').map(f=>f.trim()).filter(Boolean) : [];
@@ -390,12 +397,10 @@ function renderDrills() {
         if (flagLines.length) {
           html += `<div class="stat-line" style="align-items:flex-start"><span class="stat-key">Improvement opportunities</span><span class="stat-val flag" style="display:flex;flex-direction:column;gap:3px">${flagLines.map(f=>`<span>${f}</span>`).join('')}</span></div>`;
         } else {
-          html += `<div class="stat-line"><span class="stat-key">Improvement opportunities</span><span class="stat-val ok">None flagged</span></div>`;
+          html += `<div class="stat-line" style="margin-bottom:8px"><span class="stat-key">Improvement opportunities</span><span class="stat-val ok">None flagged</span></div>`;
         }
       }
-      html += `</div>`;
     });
-    html += `</div>`;
   });
 
   con.innerHTML = html;
@@ -436,13 +441,13 @@ function renderArrival() {
   const con = document.getElementById('screen-arrival');
   let html = '';
   (OPS.arrival || []).forEach(cl => {
-    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:24px 0 14px">${cl.cluster}</div>`;
-    html += `<div class="section">`;
+    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:28px 0 14px">${cl.cluster}</div>`;
     ['arrival','dismissal'].forEach(session => {
       const sData = cl[session], curr = sData?.current, prior = sData?.prior;
       const label = session === 'arrival' ? 'Arrival' : 'Dismissal';
       const hcls  = session === 'arrival' ? 'arr' : 'dis';
-      html += `<div style="margin-bottom:16px"><div class="session-hdr ${hcls}">${label}</div>`;
+      html += `<div class="section" style="margin-bottom:10px">`;
+      html += `<div class="session-hdr ${hcls}" style="margin-bottom:12px">${label}</div>`;
       if (!curr || curr.n === 0) {
         html += `<div class="no-data">No ${label.toLowerCase()} observations in the last ${WIN} days.</div>`;
       } else {
@@ -458,7 +463,6 @@ function renderArrival() {
       }
       html += `</div>`;
     });
-    html += `</div>`;
   });
   con.innerHTML = html || '<div class="section"><div class="no-data">No data available.</div></div>';
 }
