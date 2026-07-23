@@ -381,14 +381,15 @@ function renderDrills() {
       <div class="month-row">${dots(comp?.lock)}</div>
     </div>`;
 
-    // Most recent — outside any card outline, just a label + stat lines
-    html += `<div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px">Most recent drills</div>`;
+    // Most recent — label outside, each drill in its own white card
+    html += `<div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:16px 0 10px">Most recent drills</div>`;
     ['evac','lock'].forEach(type => {
       const drill = last?.[type];
       const label = type === 'evac' ? 'Evacuation' : 'Lockdown';
-      html += `<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:4px">${label}</div>`;
+      html += `<div class="section" style="margin-bottom:10px">`;
+      html += `<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px">${label}</div>`;
       if (!drill) {
-        html += `<div class="no-data" style="margin-bottom:12px">No drill logged yet</div>`;
+        html += `<div class="no-data">No drill logged yet</div>`;
       } else {
         const dc = drill.under10 ? 'ok' : 'warn';
         const flagLines = drill.flags ? drill.flags.split(';').map(f=>f.trim()).filter(Boolean) : [];
@@ -397,9 +398,10 @@ function renderDrills() {
         if (flagLines.length) {
           html += `<div class="stat-line" style="align-items:flex-start"><span class="stat-key">Improvement opportunities</span><span class="stat-val flag" style="display:flex;flex-direction:column;gap:3px">${flagLines.map(f=>`<span>${f}</span>`).join('')}</span></div>`;
         } else {
-          html += `<div class="stat-line" style="margin-bottom:8px"><span class="stat-key">Improvement opportunities</span><span class="stat-val ok">None flagged</span></div>`;
+          html += `<div class="stat-line"><span class="stat-key">Improvement opportunities</span><span class="stat-val ok">None flagged</span></div>`;
         }
       }
+      html += `</div>`;
     });
   });
 
