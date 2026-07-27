@@ -57,6 +57,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .section{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
 .section-title{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 .loading{color:var(--muted);font-size:14px;padding:48px 0;text-align:center}
+.loading-ring-wrap{position:relative;width:56px;height:56px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center}
+.loading-ring{position:absolute;inset:0;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:loadingSpin .8s linear infinite}
+.loading-icon{width:28px;height:28px;border-radius:6px;position:relative;z-index:1}
+@keyframes loadingSpin{to{transform:rotate(360deg)}}
 .error-box{background:#fef2f2;border:0.5px solid #fecaca;border-radius:8px;padding:14px;color:#991b1b;font-size:13px;margin-bottom:16px}
 .no-data{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
 
@@ -159,7 +163,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 <!-- ── HOME ── -->
 <div class="home-screen" id="screen-home">
-  <div id="home-loading" class="loading">Loading dashboard data…</div>
+  <div id="home-loading" class="loading">
+    <div class="loading-ring-wrap">
+      <div class="loading-ring"></div>
+      <img src="icon.png" alt="" class="loading-icon">
+    </div>
+    <div class="loading-text">Loading dashboard data…</div>
+  </div>
   <div class="home-grid" id="home-grid" style="display:none">
 
     <div class="home-card" onclick="showSection('arrival')">
