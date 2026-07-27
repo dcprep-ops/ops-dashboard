@@ -61,6 +61,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .loading-ring{position:absolute;inset:0;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:loadingSpin .8s linear infinite}
 .loading-icon{width:28px;height:28px;border-radius:6px;position:relative;z-index:1}
 @keyframes loadingSpin{to{transform:rotate(360deg)}}
+
+/* ── full-screen initial load overlay ── */
+#app-loading-overlay{position:fixed;inset:0;z-index:9999;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease}
+#app-loading-overlay .app-loading-title{font-family:Rockwell,'Rockwell Nova','Roboto Slab',serif;font-size:23px;font-weight:700;color:#fff;text-align:center;margin-bottom:28px;letter-spacing:.2px;padding:0 20px;line-height:1.25}
+#app-loading-overlay .loading-ring-wrap{width:104px;height:104px;margin:0 0 18px}
+#app-loading-overlay .loading-ring{border:5px solid rgba(255,255,255,.25);border-top-color:#E5A810}
+#app-loading-overlay .loading-icon{width:52px;height:52px;border-radius:11px}
+#app-loading-overlay .app-loading-text{font-size:15px;color:rgba(255,255,255,.85)}
+#app-loading-overlay.hidden{opacity:0;pointer-events:none}
 .error-box{background:#fef2f2;border:0.5px solid #fecaca;border-radius:8px;padding:14px;color:#991b1b;font-size:13px;margin-bottom:16px}
 .no-data{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
 
@@ -144,6 +153,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 </style>
 </head>
 <body>
+
+<div id="app-loading-overlay">
+  <div class="app-loading-title">DC Prep Ops Dashboard</div>
+  <div class="loading-ring-wrap">
+    <div class="loading-ring"></div>
+    <img src="icon.png" alt="" class="loading-icon">
+  </div>
+  <div class="app-loading-text">Loading dashboard…</div>
+</div>
 
 <!-- ── HEADER ── -->
 <div class="hdr">
@@ -325,6 +343,9 @@ async function loadAll() {
     const eb = document.getElementById('home-error');
     eb.style.display = '';
     eb.innerHTML = '<div class="error-box"><strong>Could not load data.</strong><br>' + err.message + '</div>';
+  } finally {
+    const overlay = document.getElementById('app-loading-overlay');
+    if (overlay) overlay.classList.add('hidden');
   }
 }
 
