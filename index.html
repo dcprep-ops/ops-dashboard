@@ -18,6 +18,7 @@
 :root {
   --navy:#005E9E;--teal:#0083C4;--teal-lt:#E6F3FA;
   --amber:#f59e0b;--red:#dc2626;--red-lt:#fef2f2;
+  --green:#16a34a;--yellow:#ffd65a;--gold:#E5A810;
   --muted:#94a3b8;--border:rgba(0,0,0,.09);--card:#fff;
   --bg:#f8fafc;--lt:#f1f5f9;--text:#1e293b;
 }
@@ -72,6 +73,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 #app-loading-overlay.hidden{opacity:0;pointer-events:none}
 .error-box{background:#fef2f2;border:0.5px solid #fecaca;border-radius:8px;padding:14px;color:#991b1b;font-size:13px;margin-bottom:16px}
 .no-data{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
+
+/* ── READINESS ── */
+.rdot{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;line-height:1}
+.rdot-ok    {background:var(--green); color:#fff}
+.rdot-minor {background:var(--yellow);color:#1A2B3C}
+.rdot-bad   {background:var(--red);   color:#fff}
+.rdot-blank {background:#fff;border:1.5px solid #cbd5e1}
+.rdot-na    {background:var(--lt);color:var(--muted);font-size:8px;font-weight:600}
+.camp-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:16px}
+.camp-tab{flex-shrink:0;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;background:var(--lt);color:var(--muted);cursor:pointer}
+.camp-tab.active{background:var(--navy);color:#fff}
+.section-block{margin-bottom:24px}
+.section-hdr{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:0 0 8px}
+.space-table{width:100%;border-collapse:collapse;background:var(--card);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+.space-row{cursor:default}
+.space-row.expandable{cursor:pointer}
+.space-row td{padding:8px 12px;border-top:0.5px solid var(--border);vertical-align:middle}
+.space-row:first-child td{border-top:none}
+.space-name{font-weight:500;font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px}
+.space-chevron{font-size:13px;color:var(--muted);width:14px;flex-shrink:0}
+.sc{text-align:center;width:56px}
+.space-detail-row td{padding:0 12px 12px;background:var(--lt);border-top:none}
+.space-detail-row.hidden{display:none}
+.space-detail-counts{font-size:11px;color:var(--muted);margin-bottom:4px}
+.space-detail-notes{font-size:12px;color:var(--text)}
 
 /* ── DRILLS ── */
 .drill-campus-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
@@ -256,6 +282,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="home-card-arrow">›</div>
     </div>
 
+    <div class="home-card" onclick="showSection('readiness')">
+      <div class="home-card-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 19h-3a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1"/>
+          <path d="M11 16m0 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="home-card-name">BOY Space Readiness</div>
+        <div class="home-card-sub" id="sub-readiness">Loading…</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+
   </div>
   <div id="home-error" style="display:none"></div>
 </div>
@@ -265,6 +305,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 <div class="detail-screen" id="screen-custodial"></div>
 <div class="detail-screen" id="screen-drills"></div>
 <div class="detail-screen" id="screen-transport"></div>
+<div class="detail-screen" id="screen-readiness"></div>
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPbhFWpzKX6S6seb1c0QKplVM22LjZG6bkGMBnTNopry6dDr5YGtffKKR3EsFQ77n5BQ/exec';
@@ -274,6 +315,7 @@ const SECTION_NAMES = {
   custodial: 'Custodial',
   drills: 'Drills',
   transport: 'Transportation Pilot',
+  readiness: 'BOY Space Readiness',
 };
 
 const AD_FLAG_LABELS = {
@@ -324,16 +366,23 @@ function render(name) {
   if (name === 'custodial') renderCustodial();
   if (name === 'drills')    renderDrills();
   if (name === 'transport') renderTransport();
+  if (name === 'readiness') renderReadiness();
 }
+
+const READINESS_CAMPUSES = ['AEC','AMC','BEC','BMC','EEC','EMC'];
+let BOY = {};
 
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 async function loadAll() {
   try {
-    const [ops, transport] = await Promise.all([
+    const [ops, transport, ...boyResults] = await Promise.all([
       fetch(SCRIPT_URL + '?view=ops').then(r => r.json()),
       fetch(SCRIPT_URL + '?view=transport').then(r => r.json()).catch(() => null),
+      ...READINESS_CAMPUSES.map(code => fetch(`${SCRIPT_URL}?view=boy&campus=${code}`).then(r => r.json()).catch(() => ({rooms:[]}))),
     ]);
     OPS = ops; TRANSPORT = transport; WIN = ops.window || 14;
+    BOY = {};
+    READINESS_CAMPUSES.forEach((code,i) => { BOY[code] = boyResults[i]; });
     document.getElementById('home-loading').style.display = 'none';
     document.getElementById('home-grid').style.display = '';
     document.getElementById('hdr-meta').textContent = ops.generated || '';
@@ -371,6 +420,23 @@ function buildSubtitles() {
   } else {
     document.getElementById('sub-transport').textContent = 'No trip data yet';
   }
+
+  // Readiness (BOY Space Readiness — signoff progress across all spaces, all campuses)
+  let rTotal = 0, rDone = 0;
+  READINESS_CAMPUSES.forEach(code => {
+    const rooms = (BOY[code] && BOY[code].rooms) || [];
+    rooms.forEach(r => {
+      ['MDS','SDO','tech'].forEach(track => {
+        const rec = track === 'tech' ? r.tech : r[track];
+        const cls = dotClass(rec ? rec.assessment : null);
+        if (cls === 'rdot-na') return;
+        rTotal++;
+        if (cls === 'rdot-ok' || cls === 'rdot-minor') rDone++;
+      });
+    });
+  });
+  document.getElementById('sub-readiness').textContent =
+    rTotal ? `${Math.round(rDone/rTotal*100)}% of signoffs complete` : 'No assessments logged yet';
 }
 
 // ── RENDER DRILLS ─────────────────────────────────────────────────────────────
@@ -673,6 +739,124 @@ function renderTransport() {
       }
     });
   }
+}
+
+// ── READINESS ──────────────────────────────────────────────────────────────
+// NOTE: this assumes the ?view=boy&campus= API response includes, per room,
+// a `notes` field and `deskCount`/`chairCount` fields (sourced from the most
+// recent "Ops Readiness Log" entry with data) alongside the existing MDS/SDO/
+// tech assessment objects. If the Apps Script backend doesn't yet return
+// these, the notes/counts sections below will just render as empty until
+// that's added — the dot-based signoff columns will still work either way.
+const READINESS_SECTION_ORDER = ['Classrooms','Outdoor','Common Spaces','Offices & Conference Rooms','Other'];
+let activeReadinessCampus = READINESS_CAMPUSES[0];
+
+function dotClass(assessment) {
+  if (!assessment) return 'rdot-blank';
+  const a = assessment.toLowerCase();
+  if (a.includes('fully'))  return 'rdot-ok';
+  if (a.includes('minor'))  return 'rdot-minor';
+  if (a.includes('not ready')) return 'rdot-bad';
+  if (a === 'n/a' || a === 'na') return 'rdot-na';
+  if (a === 'ready') return 'rdot-ok';
+  if (a === 'issues') return 'rdot-bad';
+  if (a === 'resolved') return 'rdot-ok';
+  return 'rdot-blank';
+}
+
+function dotLabel(cls) {
+  if (cls === 'rdot-ok')    return '✓';
+  if (cls === 'rdot-minor') return '~';
+  if (cls === 'rdot-bad')   return '!';
+  if (cls === 'rdot-na')    return '—';
+  return '';
+}
+
+function makeDot(assessment) {
+  const cls = dotClass(assessment);
+  return `<span class="rdot ${cls}">${dotLabel(cls)}</span>`;
+}
+
+function buildReadinessTables(rooms) {
+  const groups = {};
+  rooms.forEach(r => {
+    const sec = r.section || 'Other';
+    if (!groups[sec]) groups[sec] = [];
+    groups[sec].push(r);
+  });
+
+  let rowId = 0;
+  let html = '';
+  const seen = new Set();
+  const ordered = [...READINESS_SECTION_ORDER, ...Object.keys(groups).filter(s => !READINESS_SECTION_ORDER.includes(s))];
+
+  ordered.forEach(sec => {
+    if (!groups[sec] || seen.has(sec)) return;
+    seen.add(sec);
+    html += `<div class="section-block"><div class="section-hdr">${sec}</div><table class="space-table"><tbody>`;
+    groups[sec].forEach(r => {
+      rowId++;
+      const hasNotes = !!(r.notes && r.notes.trim());
+      const isClassroom = sec === 'Classrooms';
+      const hasCounts = isClassroom && (r.deskCount || r.chairCount);
+      const expandable = hasNotes;
+      const rid = `rdrow-${rowId}`;
+
+      html += `<tr class="space-row${expandable ? ' expandable' : ''}"${expandable ? ` onclick="toggleReadinessRow('${rid}')"` : ''}>
+        <td><span class="space-name">${expandable ? `<i class="ti ti-chevron-down space-chevron" id="${rid}-chev" aria-hidden="true"></i>` : ''}${r.space}</span></td>
+        <td class="sc">${makeDot(r.MDS  ? r.MDS.assessment  : null)}</td>
+        <td class="sc">${makeDot(r.SDO  ? r.SDO.assessment  : null)}</td>
+        <td class="sc">${makeDot(r.tech ? r.tech.assessment : null)}</td>
+      </tr>`;
+
+      if (expandable) {
+        const countsLine = hasCounts
+          ? `<div class="space-detail-counts"><i class="ti ti-armchair-2" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>${r.deskCount || '—'} desks · ${r.chairCount || '—'} chairs</div>`
+          : '';
+        html += `<tr class="space-detail-row hidden" id="${rid}"><td colspan="4">
+          ${countsLine}
+          <div class="space-detail-notes">${r.notes}</div>
+        </td></tr>`;
+      }
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  return html || '<div class="no-data">No spaces found for this campus.</div>';
+}
+
+function toggleReadinessRow(rid) {
+  const row = document.getElementById(rid);
+  const chev = document.getElementById(rid + '-chev');
+  if (!row) return;
+  const isHidden = row.classList.contains('hidden');
+  row.classList.toggle('hidden');
+  if (chev) chev.className = isHidden ? 'ti ti-chevron-up space-chevron' : 'ti ti-chevron-down space-chevron';
+}
+
+function renderReadiness() {
+  const con = document.getElementById('screen-readiness');
+  let html = `<div class="camp-tabs">`;
+  READINESS_CAMPUSES.forEach(code => {
+    html += `<div class="camp-tab${code === activeReadinessCampus ? ' active' : ''}" onclick="switchReadinessCampus('${code}')">${code}</div>`;
+  });
+  html += `</div><div id="readiness-panel"></div>`;
+  con.innerHTML = html;
+  renderReadinessPanel();
+}
+
+function renderReadinessPanel() {
+  const panel = document.getElementById('readiness-panel');
+  const rooms = (BOY[activeReadinessCampus] && BOY[activeReadinessCampus].rooms) || [];
+  panel.innerHTML = rooms.length ? buildReadinessTables(rooms) : '<div class="no-data">No submissions yet for ' + activeReadinessCampus + '.</div>';
+}
+
+function switchReadinessCampus(code) {
+  activeReadinessCampus = code;
+  document.querySelectorAll('#screen-readiness .camp-tab').forEach(t => {
+    t.classList.toggle('active', t.textContent === code);
+  });
+  renderReadinessPanel();
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
