@@ -52,6 +52,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 /* ── DETAIL SCREEN ── */
 .detail-screen{display:none;max-width:900px;margin:0 auto;padding:24px}
+#screen-readiness{max-width:none;margin:0;padding:12px;background:#fff}
+@media(min-width:768px){
+  #screen-readiness{max-width:900px;margin:0 auto;padding:24px}
+}
 .detail-screen.active{display:block}
 
 /* ── SHARED COMPONENTS ── */
@@ -95,10 +99,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .space-chevron{font-size:13px;color:var(--muted)}
 .space-name{font-weight:500;font-size:13px;color:var(--text)}
 .sc{text-align:center;width:56px}
-.space-detail-row td{padding:8px 12px 12px 38px;background:var(--lt);border-top:none}
+.space-detail-row td{padding:8px 12px 12px 38px;background:#F6F8FA;border-top:none}
 .space-detail-row.hidden{display:none}
-.space-detail-counts{font-size:11px;color:var(--muted);margin-bottom:4px}
-.space-detail-notes{font-size:11px;color:var(--muted)}
+.space-detail-counts{font-size:11px;color:#64748b;margin-bottom:4px}
+.space-detail-notes{font-size:11px;color:var(--text)}
 
 /* ── DRILLS ── */
 .drill-campus-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
@@ -842,7 +846,7 @@ function renderReadiness() {
   READINESS_CAMPUSES.forEach(code => {
     html += `<div class="camp-tab${code === activeReadinessCampus ? ' active' : ''}" onclick="switchReadinessCampus('${code}')">${code}</div>`;
   });
-  html += `</div><div id="readiness-panel" style="background:#fff;border-radius:12px;padding:16px"></div>`;
+  html += `</div><div id="readiness-panel"></div>`;
   con.innerHTML = html;
   renderReadinessPanel();
 }
