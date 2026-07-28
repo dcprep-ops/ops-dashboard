@@ -88,9 +88,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .camp-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:16px}
 .camp-tab{flex-shrink:0;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;background:var(--lt);color:var(--muted);cursor:pointer}
 .camp-tab.active{background:var(--navy);color:#fff}
-.section-block{margin-bottom:24px}
-.section-hdr{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 12px;margin-bottom:10px;border-radius:6px}
+.section-block{margin-bottom:10px}
+.section-hdr{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 12px;margin:28px -12px 10px}
+.section-block:first-child .section-hdr{margin-top:0}
+@media(min-width:768px){
+  .section-hdr{margin:28px -24px 10px;padding:8px 24px}
+}
 .space-table{width:100%;border-collapse:collapse}
+.space-table th{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:0.5px solid var(--border);text-align:left}
+.space-table th.sc{text-align:center;width:56px;padding:6px 4px}
 .space-row{cursor:default}
 .space-row.expandable{cursor:pointer}
 .space-row td{padding:8px 12px;border-top:0.5px solid var(--border);vertical-align:middle}
@@ -98,6 +104,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .space-chevron-cell{width:22px;text-align:center;padding:8px 0 8px 4px !important}
 .space-chevron{font-size:13px;color:var(--muted)}
 .space-name{font-weight:500;font-size:13px;color:var(--text)}
+.space-room-num{font-weight:400;color:#B8C0CC}
 .sc{text-align:center;width:56px}
 .space-detail-row td{padding:8px 12px 12px 38px;background:#F6F8FA;border-top:none}
 .space-detail-row.hidden{display:none}
@@ -798,7 +805,13 @@ function buildReadinessTables(rooms) {
   ordered.forEach(sec => {
     if (!groups[sec] || seen.has(sec)) return;
     seen.add(sec);
-    html += `<div class="section-block"><div class="section-hdr">${sec}</div><table class="space-table"><tbody>`;
+    html += `<div class="section-block"><div class="section-hdr">${sec}</div><table class="space-table"><thead><tr>
+      <th></th>
+      <th>Space</th>
+      <th class="sc">Schools</th>
+      <th class="sc">Ops</th>
+      <th class="sc">Tech</th>
+    </tr></thead><tbody>`;
     groups[sec].forEach(r => {
       rowId++;
       const hasNotes = !!(r.notes && r.notes.trim());
@@ -809,7 +822,7 @@ function buildReadinessTables(rooms) {
 
       html += `<tr class="space-row${expandable ? ' expandable' : ''}"${expandable ? ` onclick="toggleReadinessRow('${rid}')"` : ''}>
         <td class="space-chevron-cell">${expandable ? `<i class="ti ti-chevron-down space-chevron" id="${rid}-chev" aria-hidden="true"></i>` : ''}</td>
-        <td><span class="space-name">${r.space}</span></td>
+        <td><span class="space-name">${r.space}</span>${r.roomNumber ? ` <span class="space-room-num">(${r.roomNumber})</span>` : ''}</td>
         <td class="sc">${makeDot(r.MDS  ? r.MDS.assessment  : null)}</td>
         <td class="sc">${makeDot(r.SDO  ? r.SDO.assessment  : null)}</td>
         <td class="sc">${makeDot(r.tech ? r.tech.assessment : null)}</td>
