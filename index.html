@@ -85,19 +85,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .camp-tab{flex-shrink:0;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;background:var(--lt);color:var(--muted);cursor:pointer}
 .camp-tab.active{background:var(--navy);color:#fff}
 .section-block{margin-bottom:24px}
-.section-hdr{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:0 0 8px}
-.space-table{width:100%;border-collapse:collapse;background:var(--card);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+.section-hdr{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 12px;margin-bottom:10px;border-radius:6px}
+.space-table{width:100%;border-collapse:collapse}
 .space-row{cursor:default}
 .space-row.expandable{cursor:pointer}
 .space-row td{padding:8px 12px;border-top:0.5px solid var(--border);vertical-align:middle}
 .space-row:first-child td{border-top:none}
-.space-name{font-weight:500;font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px}
-.space-chevron{font-size:13px;color:var(--muted);width:14px;flex-shrink:0}
+.space-chevron-cell{width:22px;text-align:center;padding:8px 0 8px 4px !important}
+.space-chevron{font-size:13px;color:var(--muted)}
+.space-name{font-weight:500;font-size:13px;color:var(--text)}
 .sc{text-align:center;width:56px}
-.space-detail-row td{padding:0 12px 12px;background:var(--lt);border-top:none}
+.space-detail-row td{padding:8px 12px 12px 38px;background:var(--lt);border-top:none}
 .space-detail-row.hidden{display:none}
 .space-detail-counts{font-size:11px;color:var(--muted);margin-bottom:4px}
-.space-detail-notes{font-size:12px;color:var(--text)}
+.space-detail-notes{font-size:11px;color:var(--muted)}
 
 /* ── DRILLS ── */
 .drill-campus-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
@@ -216,6 +217,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
   <div class="home-grid" id="home-grid" style="display:none">
 
+    <div class="home-card" onclick="showSection('readiness')">
+      <div class="home-card-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 19h-3a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1"/>
+          <path d="M11 16m0 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="home-card-name">BOY Space Readiness</div>
+        <div class="home-card-sub" id="sub-readiness">Loading…</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+
     <div class="home-card" onclick="showSection('arrival')">
       <div class="home-card-icon">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -278,20 +293,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div>
         <div class="home-card-name">Transportation Pilot</div>
         <div class="home-card-sub" id="sub-transport">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
-    <div class="home-card" onclick="showSection('readiness')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 19h-3a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1"/>
-          <path d="M11 16m0 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">BOY Space Readiness</div>
-        <div class="home-card-sub" id="sub-readiness">Loading…</div>
       </div>
       <div class="home-card-arrow">›</div>
     </div>
@@ -803,7 +804,8 @@ function buildReadinessTables(rooms) {
       const rid = `rdrow-${rowId}`;
 
       html += `<tr class="space-row${expandable ? ' expandable' : ''}"${expandable ? ` onclick="toggleReadinessRow('${rid}')"` : ''}>
-        <td><span class="space-name">${expandable ? `<i class="ti ti-chevron-down space-chevron" id="${rid}-chev" aria-hidden="true"></i>` : ''}${r.space}</span></td>
+        <td class="space-chevron-cell">${expandable ? `<i class="ti ti-chevron-down space-chevron" id="${rid}-chev" aria-hidden="true"></i>` : ''}</td>
+        <td><span class="space-name">${r.space}</span></td>
         <td class="sc">${makeDot(r.MDS  ? r.MDS.assessment  : null)}</td>
         <td class="sc">${makeDot(r.SDO  ? r.SDO.assessment  : null)}</td>
         <td class="sc">${makeDot(r.tech ? r.tech.assessment : null)}</td>
@@ -811,9 +813,9 @@ function buildReadinessTables(rooms) {
 
       if (expandable) {
         const countsLine = hasCounts
-          ? `<div class="space-detail-counts"><i class="ti ti-armchair-2" style="font-size:13px;vertical-align:-2px;margin-right:4px"></i>${r.deskCount || '—'} desks · ${r.chairCount || '—'} chairs</div>`
+          ? `<div class="space-detail-counts">${r.deskCount || '—'} desks · ${r.chairCount || '—'} chairs</div>`
           : '';
-        html += `<tr class="space-detail-row hidden" id="${rid}"><td colspan="4">
+        html += `<tr class="space-detail-row hidden" id="${rid}"><td colspan="5">
           ${countsLine}
           <div class="space-detail-notes">${r.notes}</div>
         </td></tr>`;
@@ -840,7 +842,7 @@ function renderReadiness() {
   READINESS_CAMPUSES.forEach(code => {
     html += `<div class="camp-tab${code === activeReadinessCampus ? ' active' : ''}" onclick="switchReadinessCampus('${code}')">${code}</div>`;
   });
-  html += `</div><div id="readiness-panel"></div>`;
+  html += `</div><div id="readiness-panel" style="background:#fff;border-radius:12px;padding:16px"></div>`;
   con.innerHTML = html;
   renderReadinessPanel();
 }
