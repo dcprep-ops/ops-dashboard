@@ -317,6 +317,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="home-card-arrow">›</div>
     </div>
 
+    <div class="home-card" onclick="showSection('walkthrough')">
+      <div class="home-card-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+      </div>
+      <div>
+        <div class="home-card-name">Common Space Walkthrough</div>
+        <div class="home-card-sub" id="sub-walkthrough">Report view coming soon</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+
     <div class="home-card" onclick="showSection('drills')">
       <div class="home-card-icon">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -361,6 +372,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 <div class="detail-screen" id="screen-drills"></div>
 <div class="detail-screen" id="screen-transport"></div>
 <div class="detail-screen" id="screen-readiness"></div>
+<div class="detail-screen" id="screen-walkthrough"></div>
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPbhFWpzKX6S6seb1c0QKplVM22LjZG6bkGMBnTNopry6dDr5YGtffKKR3EsFQ77n5BQ/exec';
@@ -371,6 +383,7 @@ const SECTION_NAMES = {
   drills: 'Drills',
   transport: 'Transportation Pilot',
   readiness: 'BOY Building Readiness',
+  walkthrough: 'Common Space Walkthrough',
 };
 
 const AD_FLAG_LABELS = {
@@ -386,7 +399,7 @@ const AD_FLAG_LABELS = {
   'Students needing support identified and assisted promptly': 'Identifying students who need support',
 };
 
-let OPS = null, TRANSPORT = null, WIN = 14;
+let OPS = null, TRANSPORT = null, WALKTHROUGH = null, WIN = 14;
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 function showSection(name) {
@@ -417,11 +430,12 @@ function goHome() {
 
 function render(name) {
   if (!OPS) return;
-  if (name === 'arrival')   renderArrival();
-  if (name === 'custodial') renderCustodial();
-  if (name === 'drills')    renderDrills();
-  if (name === 'transport') renderTransport();
-  if (name === 'readiness') renderReadiness();
+  if (name === 'arrival')     renderArrival();
+  if (name === 'custodial')   renderCustodial();
+  if (name === 'drills')      renderDrills();
+  if (name === 'transport')   renderTransport();
+  if (name === 'readiness')   renderReadiness();
+  if (name === 'walkthrough') renderWalkthrough();
 }
 
 const READINESS_CAMPUSES = ['AEC','AMC','BEC','BMC','EEC','EMC'];
@@ -430,12 +444,13 @@ let BOY = {};
 // ── LOAD DATA ─────────────────────────────────────────────────────────────────
 async function loadAll() {
   try {
-    const [ops, transport, ...boyResults] = await Promise.all([
+    const [ops, transport, walkthrough, ...boyResults] = await Promise.all([
       fetch(SCRIPT_URL + '?view=ops').then(r => r.json()),
       fetch(SCRIPT_URL + '?view=transport').then(r => r.json()).catch(() => null),
+      fetch(SCRIPT_URL + '?view=walkthrough').then(r => r.json()).catch(() => ({campuses:{}})),
       ...READINESS_CAMPUSES.map(code => fetch(`${SCRIPT_URL}?view=boy&campus=${code}`).then(r => r.json()).catch(() => ({rooms:[]}))),
     ]);
-    OPS = ops; TRANSPORT = transport; WIN = ops.window || 14;
+    OPS = ops; TRANSPORT = transport; WALKTHROUGH = walkthrough; WIN = ops.window || 14;
     BOY = {};
     READINESS_CAMPUSES.forEach((code,i) => { BOY[code] = boyResults[i]; });
     document.getElementById('home-loading').style.display = 'none';
@@ -476,6 +491,15 @@ function buildSubtitles() {
     document.getElementById('sub-transport').textContent = 'No trip data yet';
   }
 
+  // Common Space Walkthrough
+  const wtCampuses = Object.values(WALKTHROUGH?.campuses || {});
+  const wtLatestVisits = wtCampuses.map(c => c.latest).filter(Boolean);
+  if (wtLatestVisits.length) {
+    const flaggedTotal = wtLatestVisits.reduce((s, v) => s + v.spacesFlagged, 0);
+    document.getElementById('sub-walkthrough').textContent = wtLatestVisits.length + ' campus walkthroughs logged · ' + flaggedTotal + ' flagged';
+  } else {
+    document.getElementById('sub-walkthrough').textContent = 'No walkthroughs logged yet';
+  }
   // Readiness (BOY Building Readiness — signoff progress across all spaces, all campuses)
   let rTotal = 0, rDone = 0;
   READINESS_CAMPUSES.forEach(code => {
@@ -1057,6 +1081,7 @@ function buildSpaceCategoryChart(bySection, totalRemaining) {
 }
 
 let activeReadinessCampus = 'ALL';
+let activeWalkthroughCampus = 'ALL';
 
 function dotClass(assessment) {
   if (!assessment) return 'rdot-blank';
@@ -1181,6 +1206,124 @@ function switchReadinessCampus(code) {
     t.classList.toggle('active', t.textContent === (code === 'ALL' ? 'All' : code));
   });
   renderReadinessPanel();
+}
+
+// ── Common Space Walkthrough ──────────────────────────────────────────────────
+const WT_STATUS_META = {
+  good:    { label: 'Well kept',         cls: 'badge-accent' },
+  upkeep:  { label: 'Needs improvement', cls: 'badge-warn' },
+  flag:    { label: 'Major issues',      cls: 'badge-danger' },
+  skipped: { label: 'Skipped',           cls: 'badge-gray' },
+};
+
+function renderWalkthrough() {
+  const con = document.getElementById('screen-walkthrough');
+  let html = `<div class="camp-tabs">`;
+  html += `<div class="camp-tab${activeWalkthroughCampus === 'ALL' ? ' active' : ''}" onclick="switchWalkthroughCampus('ALL')">All</div>`;
+  READINESS_CAMPUSES.forEach(code => {
+    html += `<div class="camp-tab${code === activeWalkthroughCampus ? ' active' : ''}" onclick="switchWalkthroughCampus('${code}')">${code}</div>`;
+  });
+  html += `</div><div id="walkthrough-panel"></div>`;
+  con.innerHTML = html;
+  renderWalkthroughPanel();
+}
+
+function renderWalkthroughPanel() {
+  const panel = document.getElementById('walkthrough-panel');
+  if (activeWalkthroughCampus === 'ALL') {
+    panel.innerHTML = buildWalkthroughAllTab();
+    return;
+  }
+  const campusData = (WALKTHROUGH?.campuses || {})[activeWalkthroughCampus];
+  panel.innerHTML = campusData && campusData.latest
+    ? buildWalkthroughReport(campusData)
+    : '<div class="no-data">No walkthroughs logged yet for ' + activeWalkthroughCampus + '.</div>';
+}
+
+function switchWalkthroughCampus(code) {
+  activeWalkthroughCampus = code;
+  document.querySelectorAll('#screen-walkthrough .camp-tab').forEach(t => {
+    t.classList.toggle('active', t.textContent === (code === 'ALL' ? 'All' : code));
+  });
+  renderWalkthroughPanel();
+}
+
+function buildWalkthroughAllTab() {
+  const campuses = WALKTHROUGH?.campuses || {};
+  const rows = READINESS_CAMPUSES.map(code => ({ code, data: campuses[code] }));
+  const withData = rows.filter(r => r.data && r.data.latest);
+  if (!withData.length) return '<div class="no-data">No walkthroughs logged yet.</div>';
+
+  let html = `<table class="space-table"><thead><tr>
+    <th>Campus</th><th>Last walkthrough</th><th class="sc">Flagged</th><th class="sc">Split views</th>
+  </tr></thead><tbody>`;
+  rows.forEach(r => {
+    const v = r.data && r.data.latest;
+    html += `<tr class="space-row expandable" onclick="switchWalkthroughCampus('${r.code}')">
+      <td><span class="space-name">${r.code}</span></td>
+      <td>${v ? v.date : '—'}</td>
+      <td class="sc">${v ? v.spacesFlagged : '—'}</td>
+      <td class="sc">${v ? v.splitViews : '—'}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  return html;
+}
+
+function buildWalkthroughReport(campusData) {
+  const v = campusData.latest;
+  let html = `<div style="font-size:13px;color:var(--muted);margin-bottom:2px">Walkthrough report</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:2px">${v.date}</div>`;
+  if (campusData.previous) {
+    html += `<div style="font-size:12px;color:var(--muted);margin-bottom:10px">Compared to ${campusData.previous.date}</div>`;
+  }
+  if (v.observers.length) {
+    html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">`;
+    v.observers.forEach(name => {
+      html += `<span class="badge badge-accent"><i class="ti ti-user" style="font-size:11px;vertical-align:-1px;margin-right:3px" aria-hidden="true"></i>${name}</span>`;
+    });
+    html += `</div>`;
+  }
+  html += `<div style="font-size:12px;color:var(--muted);margin-bottom:14px">${v.spacesWalked} spaces walked · ${v.spacesFlagged} flagged${v.splitViews ? ' · ' + v.splitViews + ' split view' + (v.splitViews > 1 ? 's' : '') : ''}</div>`;
+
+  html += `<table class="space-table"><tbody>`;
+  let rowId = 0;
+  v.spaces.forEach(s => {
+    rowId++;
+    const rid = `wtrow-${rowId}`;
+    const st = s.status ? WT_STATUS_META[s.status] : null;
+    const trendBadge = s.trend === 'focus' ? '<span class="badge-focus">Focus</span>'
+      : s.trend === 'improving' ? '<span class="badge-improving">Improving</span>'
+      : s.trend === 'stable' ? '<span class="badge-stable">Stable</span>' : '';
+    const expandable = s.entries.length > 0;
+    html += `<tr class="space-row${expandable ? ' expandable' : ''}"${expandable ? ` onclick="toggleWalkthroughRow('${rid}')"` : ''}>
+      <td class="space-chevron-cell">${expandable ? `<i class="ti ti-chevron-down space-chevron" id="${rid}-chev" aria-hidden="true"></i>` : ''}</td>
+      <td><span class="space-name">${s.space}</span>${s.split ? '<span style="font-size:10px;color:var(--muted);margin-left:6px">split view</span>' : ''}</td>
+      <td class="sc" style="text-align:right;white-space:nowrap">${trendBadge}${st ? `<span class="badge ${st.cls}" style="margin-left:6px">${st.label}</span>` : '<span class="badge badge-gray">Not walked</span>'}</td>
+    </tr>`;
+    if (expandable) {
+      html += `<tr class="space-detail-row hidden" id="${rid}"><td colspan="3">`;
+      s.entries.forEach(e => {
+        const est = WT_STATUS_META[e.status];
+        html += `<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+          <span style="color:var(--muted)">${e.name}</span><span style="font-weight:600">${est ? est.label : e.status}</span>
+        </div>`;
+        if (e.notes) html += `<div class="space-detail-notes" style="margin-bottom:6px">${e.notes}</div>`;
+      });
+      html += `</td></tr>`;
+    }
+  });
+  html += `</tbody></table>`;
+  return html;
+}
+
+function toggleWalkthroughRow(rid) {
+  const row = document.getElementById(rid);
+  const chev = document.getElementById(rid + '-chev');
+  if (!row) return;
+  const isHidden = row.classList.contains('hidden');
+  row.classList.toggle('hidden');
+  if (chev) chev.className = isHidden ? 'ti ti-chevron-up space-chevron' : 'ti ti-chevron-down space-chevron';
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
