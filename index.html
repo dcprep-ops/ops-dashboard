@@ -2,209 +2,127 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DC Prep Ops Dashboard</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ops Dashboard">
-<meta name="application-name" content="Ops Dashboard">
-<meta name="theme-color" content="#1a3a5c">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMWEzYTVjIiByeD0iNiIvPjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgcng9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC45KSIvPjxyZWN0IHg9IjE4IiB5PSI0IiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHJ4PSIyIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuOSkiLz48cmVjdCB4PSI0IiB5PSIxOCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiByeD0iMiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjkpIi8+PHJlY3QgeD0iMTgiIHk9IjE4IiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHJ4PSIyIiBmaWxsPSIjMGQ5NDg4Ii8+PC9zdmc+">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BOY Readiness Dashboard</title>
+<link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Ops%20Dashboard%22%2C%22short_name%22%3A%22Ops%20Dashboard%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a3a5c%22%2C%22theme_color%22%3A%22%231a3a5c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<meta property="og:image" content="share.png">
+<meta property="og:title" content="BOY Space Readiness">
+<meta property="og:description" content="DC Prep BOY Space Readiness Dashboard — SY 2026–27">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="share.png">
 <style>
-:root {
-  --navy:#005E9E;--teal:#0083C4;--teal-lt:#E6F3FA;
-  --amber:#f59e0b;--red:#dc2626;--red-lt:#fef2f2;
-  --green:#16a34a;--yellow:#ffd65a;--gold:#E5A810;
-  --muted:#94a3b8;--border:rgba(0,0,0,.09);--card:#fff;
-  --bg:#f8fafc;--lt:#f1f5f9;--text:#1e293b;
+:root{
+  --blue:#005E9E;--blue-web:#0083C4;--gold:#E5A810;
+  --green:#16a34a;--yellow:#ffd65a;--red:#dc2626;
+  --border:rgba(0,94,158,.1);--bg:#F4F7FA;--card:#fff;
+  --lt:#EBF3FB;--text:#1A2B3C;--muted:#6B8299;
+  --col-mds:var(--blue);--col-sdo:#7c3aed;--col-dof:#b45309;--col-dot:#0891b2;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;color:var(--text);min-height:100vh}
 
-/* ── HEADER ── */
-.hdr{background:var(--navy);position:sticky;top:0;z-index:100}
-.hdr-gold-bar{height:5px;background:#E5A810}
-.hdr-inner{padding:16px 24px 16px}
-.hdr-top{display:flex;align-items:center;justify-content:space-between}
-.hdr-brand{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px}
-.hdr-title{font-size:20px;font-weight:700;color:#fff}
-.hdr-meta{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
-.back-btn{font-size:13px;color:rgba(255,255,255,.7);background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 12px;cursor:pointer;display:none}
-.back-btn.visible{display:inline-flex;align-items:center;gap:5px}
-.section-title-hdr{font-size:14px;font-weight:600;color:rgba(255,255,255,.55);margin-top:4px;display:none}
-.section-title-hdr.visible{display:block}
+/* ── header ── */
+.hdr{background:var(--blue);position:sticky;top:0;z-index:100}
+.hdr-gold{height:5px;background:var(--gold)}
+.hdr-inner{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr-brand{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px}
+.hdr-title{font-size:18px;font-weight:700;color:#fff}
+.hdr-meta{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
 
-/* ── HOME SCREEN ── */
-.home-screen{max-width:900px;margin:0 auto;padding:20px 16px}
-.home-grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:540px){.home-grid{grid-template-columns:1fr 1fr}}
-.home-card{background:var(--card);border:0.5px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:row;align-items:center;gap:12px}
-.home-card:hover{border-color:#E5A810}
-.home-card:active{background:var(--lt)}
-.home-card-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.home-card-icon svg{display:block}
-.home-card-name{font-size:15px;font-weight:600;color:var(--navy)}
-.home-card-sub{font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px}
-.home-card-arrow{font-size:18px;color:#E5A810;margin-left:auto;flex-shrink:0}
+/* campus tabs */
+.campus-tabs{display:flex;gap:0;overflow-x:auto;background:rgba(0,0,0,.15);padding:0 12px}
+.campus-tab{font-size:12px;font-weight:600;color:rgba(255,255,255,.55);padding:9px 0;white-space:nowrap;cursor:pointer;border-bottom:3px solid transparent;flex:1;text-align:center;min-width:0;transition:color .15s}
+.campus-tab.active{color:#fff;border-bottom-color:var(--gold)}
+.campus-tab.sep{border-right:1px solid rgba(255,255,255,.15);padding-right:0;margin-right:0}
 
-/* ── DETAIL SCREEN ── */
-.detail-screen{display:none;max-width:900px;margin:0 auto;padding:24px}
-#screen-readiness{max-width:none;margin:0;padding:12px;background:#fff}
-@media(min-width:768px){
-  #screen-readiness{max-width:800px;margin:0 auto;padding:24px}
-}
-.detail-screen.active{display:block}
+/* ── legend ── */
+.legend{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--card);border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+.legend-title{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-right:4px;white-space:nowrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
 
-/* ── SHARED COMPONENTS ── */
-.section{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-.section-title{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-.loading{color:var(--muted);font-size:14px;padding:48px 0;text-align:center}
+/* ── dots ── */
+.dot{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:700;line-height:1}
+.dot-ok    {background:var(--green); color:#fff}
+.dot-minor {background:var(--yellow);color:#1A2B3C}
+.dot-bad   {background:var(--red);   color:#fff}
+.dot-blank {background:#fff;border:1.5px solid #cbd5e1}
+.dot-na    {background:var(--lt);color:var(--muted);font-size:8px;font-weight:600}
+.dot-pending {background:#378ADD;color:#fff}
+
+/* ── main ── */
+.main{max-width:800px;margin:0 auto;padding:16px 20px 40px}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.section-block{margin-bottom:10px}
+.section-hdr{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 20px;margin:28px -20px 10px}
+.section-block:first-child .section-hdr{margin-top:0}
+
+/* ── space table ── */
+.space-table{width:100%;border-collapse:collapse}
+.space-table th{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:0.5px solid var(--border);text-align:left}
+.space-table th.sc{text-align:center;width:62px;padding:6px 4px}
+.space-table td{padding:7px 12px;border-bottom:0.5px solid var(--border);font-size:13px;color:var(--text);vertical-align:middle}
+.space-table th:first-child, .space-table td:first-child{padding-left:0}
+.space-table th.sc:last-child, .space-table td.sc:last-child{padding-right:0}
+.space-table tr:last-child td{border-bottom:none}
+.space-table tr:hover td{background:#f8fbff}
+.space-table td.sc{text-align:center;vertical-align:middle;padding:7px 4px}
+.space-name{font-weight:500}
+.space-room-num{font-weight:400;font-size:13px;color:#B8C0CC}
+.space-table tr.tight td{border-bottom:none}
+.space-counts-row td{padding:0 12px 8px;font-size:11px;color:var(--muted)}
+
+/* ── loading / error states ── */
+.loading-row td{color:var(--muted);font-style:italic;text-align:center;padding:20px}
+.empty-msg{color:var(--muted);font-size:13px;padding:40px 0;text-align:center}
 .loading-ring-wrap{position:relative;width:56px;height:56px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center}
-.loading-ring{position:absolute;inset:0;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:loadingSpin .8s linear infinite}
+.loading-ring{position:absolute;inset:0;border:3px solid var(--border);border-top-color:var(--blue-web);border-radius:50%;animation:loadingSpin .8s linear infinite}
 .loading-icon{width:28px;height:28px;border-radius:6px;position:relative;z-index:1}
 @keyframes loadingSpin{to{transform:rotate(360deg)}}
 
 /* ── full-screen initial load overlay ── */
-#app-loading-overlay{position:fixed;inset:0;z-index:9999;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease}
+#app-loading-overlay{position:fixed;inset:0;z-index:9999;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .3s ease}
 #app-loading-overlay .app-loading-title{font-family:Rockwell,'Rockwell Nova','Roboto Slab',serif;font-size:23px;font-weight:700;color:#fff;text-align:center;margin-bottom:28px;letter-spacing:.2px;padding:0 20px;line-height:1.25}
 #app-loading-overlay .loading-ring-wrap{width:104px;height:104px;margin:0 0 18px}
-#app-loading-overlay .loading-ring{border:5px solid rgba(255,255,255,.25);border-top-color:#E5A810}
+#app-loading-overlay .loading-ring{border:5px solid rgba(255,255,255,.25);border-top-color:var(--gold)}
 #app-loading-overlay .loading-icon{width:52px;height:52px;border-radius:11px}
 #app-loading-overlay .app-loading-text{font-size:15px;color:rgba(255,255,255,.85)}
 #app-loading-overlay.hidden{opacity:0;pointer-events:none}
-.error-box{background:#fef2f2;border:0.5px solid #fecaca;border-radius:8px;padding:14px;color:#991b1b;font-size:13px;margin-bottom:16px}
-.no-data{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
 
-/* ── READINESS ── */
-.rdot{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;line-height:1}
-.rdot-ok    {background:var(--green); color:#fff}
-.rdot-minor {background:var(--yellow);color:#1A2B3C}
-.rdot-bad   {background:var(--red);   color:#fff}
-.rdot-blank {background:#fff;border:1.5px solid #cbd5e1}
-.rdot-na    {background:var(--lt);color:var(--muted);font-size:8px;font-weight:600}
-.rdot-pending {background:#378ADD;color:#fff}
-.camp-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:16px}
-.camp-tab{flex-shrink:0;font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;background:var(--lt);color:var(--muted);cursor:pointer}
-.camp-tab.active{background:var(--navy);color:#fff}
-.section-block{margin-bottom:10px}
-.section-hdr{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 12px;margin:28px -12px 10px}
-.section-block:first-child .section-hdr{margin-top:0}
-@media(min-width:768px){
-  .section-hdr{margin:28px -24px 10px;padding:8px 24px}
-}
-.space-table{width:100%;border-collapse:collapse}
-.space-table th{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);padding:6px 12px;border-bottom:0.5px solid var(--border);text-align:left}
-.space-table th.sc{text-align:center;width:56px;padding:6px 4px}
-.space-row{cursor:default}
-.space-row.expandable{cursor:pointer}
-.space-row td{padding:8px 12px;border-top:0.5px solid var(--border);vertical-align:middle;font-size:13px}
-.space-row:first-child td{border-top:none}
-.space-chevron-cell{width:22px;text-align:center;padding:8px 0 8px 4px !important}
-.space-chevron{font-size:13px;color:var(--muted)}
-.space-name{font-weight:500;font-size:13px;color:var(--text)}
-.space-room-num{font-weight:400;font-size:13px;color:#B8C0CC}
-.sc{text-align:center;width:56px}
-.space-detail-row td{padding:8px 12px 12px 38px;background:#F6F8FA;border-top:none}
-.space-detail-row.hidden{display:none}
-.space-detail-counts{font-size:11px;color:#64748b;margin-bottom:4px}
-.space-detail-notes{font-size:11px;color:var(--text)}
-
-/* ── DRILLS ── */
-.drill-campus-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
-.drill-type-label{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
-.month-row{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;margin-bottom:4px}
-.month-cell{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;min-width:28px}
-.month-lbl{font-size:9px;color:var(--muted)}
-.dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
-.dot-ok{background:var(--teal);color:#fff}.dot-slow{background:var(--amber);color:#fff}
-.dot-none{background:var(--red-lt);color:var(--red)}.dot-future{background:var(--lt);color:var(--muted)}
-.last-drill-card{background:var(--lt);border-radius:10px;padding:12px 14px;margin-bottom:10px}
-.stat-line{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:0.5px solid var(--border)}
-.stat-line:last-child{border-bottom:none}
-.stat-key{color:var(--muted)}.stat-val{color:var(--navy);font-weight:500;max-width:60%;text-align:right}
-.stat-val.ok{color:var(--teal)}.stat-val.warn{color:var(--amber)}.stat-val.flag{color:var(--red)}
-
-/* ── ARRIVAL ── */
-.session-hdr{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;margin:0 0 10px}
-.session-hdr.arr{color:#085041}.session-hdr.dis{color:#1e40af}
-.r-table{width:100%;border-collapse:collapse;margin-bottom:6px}
-.r-table thead th{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);padding:0 0 6px;border-bottom:0.5px solid var(--border)}
-.r-table tbody td{padding:7px 0;border-bottom:0.5px solid rgba(0,0,0,.05);vertical-align:middle}
-.r-table tbody tr:last-child td{border-bottom:none}
-.bar-track{height:7px;background:var(--lt);border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px}
-.n-lbl{font-size:10px;margin-top:6px;margin-bottom:10px}
-.flags-title{font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
-.flag-item{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:0.5px solid rgba(0,0,0,.05)}
-.flag-item:last-child{border-bottom:none}
-.flag-name{color:var(--navy);flex:1;padding-right:10px}
-.flag-pct{color:var(--red);font-weight:500}
-.cluster-block{margin-bottom:24px}
-.cluster-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
-
-/* ── CUSTODIAL ── */
-.sparkline{display:flex;align-items:flex-end;gap:3px;height:44px;margin:10px 0 2px}
-.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:4px}
-.spark-good{background:var(--teal)}.spark-mid{background:var(--amber)}.spark-low{background:var(--red)}.spark-null{background:var(--border)}
-.pct-big{font-size:28px;font-weight:700}
-.improve-item{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px}
-.improve-item:last-child{border-bottom:none}
-.improve-name{color:var(--navy);flex:1;padding-right:10px;font-weight:500}
-.improve-right{text-align:right;flex-shrink:0}
-.flag-rate-val{font-size:14px;font-weight:700;color:var(--red)}
-.prior-rate-val{font-size:10px;color:var(--muted);display:block}
-.badge-focus{background:var(--red-lt);color:#991b1b;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
-.badge-improving{background:var(--teal-lt);color:#005E9E;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
-.badge-stable{background:var(--lt);color:var(--muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
-
-/* ── TRANSPORTATION ── */
-.metric-table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:0 8px}
-.metric-lbl{font-size:11px;color:var(--muted);line-height:1.35;align-self:end;padding-bottom:5px}
-.metric-val-t{font-size:20px;font-weight:700;color:var(--navy);align-self:start}
-.route-header{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px}
-.route-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
-.metric-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.metric-card{background:var(--lt);border-radius:10px;padding:14px}
-.metric-label{font-size:11px;color:var(--muted);margin-bottom:4px}
-.metric-val{font-size:22px;font-weight:700;color:var(--navy)}
-.leg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.leg-block{background:var(--lt);border-radius:10px;padding:14px}
-.leg-title{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.leg-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.leg-stat-label{font-size:10px;color:var(--muted);margin-bottom:3px}
-.leg-stat-val{font-size:16px;font-weight:700;color:var(--navy)}
-.chart-wrap{position:relative;width:100%;height:200px;margin-bottom:4px}
-.chart-legend{display:flex;gap:16px;font-size:12px;color:var(--muted);margin-bottom:14px}
-.chart-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.chart-legend-swatch{width:14px;height:3px;border-radius:2px}
-
-/* ── Space Readiness Progress (per-campus) & All-tab aggregate view ── */
+/* ── overall tab — vertical KPI cards ── */
 .net-summary{padding:20px 0 16px;margin-bottom:24px}
 .net-summary-title{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 20px;margin:0 -20px 14px}
+.bar-legend{display:flex;gap:16px;margin-top:14px;margin-bottom:16px}
+.bar-legend-swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.bar-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.kpi-list{display:flex;flex-direction:column;gap:14px}
 .kpi-card{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px}
-.kpi-name{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.kpi-pct{font-size:28px;font-weight:700;color:var(--text);line-height:1;margin-bottom:12px}
-.kpi-pct-unit{font-size:16px;color:var(--muted);font-weight:400}
-.kpi-bar-track{height:36px;background:rgba(0,0,0,.07);border-radius:8px;overflow:hidden;display:flex}
-.seg-ok{background:var(--green);height:100%;display:flex;align-items:center;padding:0 10px}
-.seg-gray{background:#94a3b8;height:100%;display:flex;align-items:center;padding:0 10px}
-.seg-mn{background:var(--yellow);height:100%;display:flex;align-items:center;padding:0 8px}
-.seg-label-ok{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden}
-.seg-label-mn{font-size:12px;font-weight:600;color:#78350f;white-space:nowrap;overflow:hidden}
-.bar-legend{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap}
-.bar-legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
-.bar-legend-swatch{width:12px;height:12px;border-radius:3px}
 .signoffs-box{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:14px}
 .signoffs-box-title{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .signoff-row{display:flex;align-items:center;gap:12px;padding:7px 0}
 .signoff-row + .signoff-row{border-top:0.5px solid var(--border)}
 .signoff-label{width:38px;flex-shrink:0;font-size:13px;font-weight:600;color:var(--text)}
 .signoff-bar-track{flex:1;height:22px;background:rgba(0,0,0,.06);border-radius:6px;overflow:hidden;display:flex}
+.kpi-name{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.kpi-pct{font-size:28px;font-weight:700;color:var(--text);line-height:1;margin-bottom:12px}
+.kpi-pct-unit{font-size:16px;color:var(--muted);font-weight:400}
+.kpi-bar-track{height:36px;background:rgba(0,0,0,.07);border-radius:8px;overflow:hidden;display:flex}
+.kpi-needed{font-size:12px;color:var(--text);font-weight:400;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border)}
+.kpi-needed-num{font-weight:400;color:var(--text)}
+.seg-ok{background:var(--green);height:100%;display:flex;align-items:center;padding:0 10px}
+.seg-gray{background:#94a3b8;height:100%;display:flex;align-items:center;padding:0 10px}
+.seg-pending{background:#378ADD;height:100%;display:flex;align-items:center;padding:0 8px}
+.seg-mn{background:var(--yellow);height:100%;display:flex;align-items:center;padding:0 8px}
+.seg-label-ok{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden}
+.seg-label-pending{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden}
+.seg-label-mn{font-size:12px;font-weight:600;color:#78350f;white-space:nowrap;overflow:hidden}
+
+/* Total Progress: burndown + spaces-by-category */
 .progress-block{margin-top:32px}
 .progress-block-title{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 20px;margin:0 -20px 14px}
+.chart-legend{display:flex;gap:18px;margin-bottom:14px;flex-wrap:wrap}
+.chart-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.chart-legend-swatch{width:14px;height:3px;border-radius:2px}
 .chart-headline{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
 .chart-headline .num{font-size:28px;font-weight:700;color:var(--text)}
 .chart-headline .lbl{font-size:13px;color:var(--muted)}
@@ -213,31 +131,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cat-legend-swatch{width:10px;height:10px;border-radius:2px}
 .cat-row{display:flex;align-items:center;gap:8px;padding:9px 0}
 .cat-label{width:90px;flex-shrink:0;font-size:12px;color:var(--text);font-weight:500;line-height:1.3}
-.cat-bar-outer{flex:1;min-width:0}
-.cat-bar-track{height:20px;background:var(--lt);border-radius:4px;overflow:hidden;display:flex}
-.cat-seg{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700}
-.cat-count{width:34px;flex-shrink:0;text-align:right;font-size:13px;font-weight:600;color:var(--navy)}
 @media(min-width:480px){
   .cat-row{gap:12px}
   .cat-label{width:170px;font-size:13px}
 }
-.chart-swatch{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
-.issue-table{width:100%;border-collapse:collapse;font-size:13px}
-.issue-table th{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 0 8px;border-bottom:0.5px solid var(--border)}
-.issue-table td{padding:8px 0;border-bottom:0.5px solid var(--border);vertical-align:top}
-.issue-table tr:last-child td{border-bottom:none}
-.td-trunc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;color:var(--muted)}
-.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600}
-.badge-warn{background:#fef9c3;color:#92400e}
-.badge-danger{background:var(--red-lt);color:#991b1b}
-.badge-accent{background:var(--teal-lt);color:var(--navy)}
-.badge-gray{background:var(--lt);color:var(--muted)}
+.cat-bar-outer{flex:1;min-width:0}
+.cat-bar-track{height:20px;background:var(--lt);border-radius:4px;overflow:hidden;display:flex}
+.cat-seg{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700}
+.cat-count{width:34px;flex-shrink:0;text-align:right;font-size:13px;font-weight:600;color:var(--blue)}
+.kpi-na{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:14px 16px}
+.kpi-na-name{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.kpi-na-note{font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
 
 <div id="app-loading-overlay">
-  <div class="app-loading-title">DC Prep Ops Dashboard</div>
+  <div class="app-loading-title">BOY Readiness Dashboard</div>
   <div class="loading-ring-wrap">
     <div class="loading-ring"></div>
     <img src="icon.png" alt="" class="loading-icon">
@@ -245,594 +155,180 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   <div class="app-loading-text">Loading dashboard…</div>
 </div>
 
-<!-- ── HEADER ── -->
 <div class="hdr">
-  <div class="hdr-gold-bar"></div>
+  <div class="hdr-gold"></div>
   <div class="hdr-inner">
-    <div class="hdr-top">
-      <div>
-        <div class="hdr-brand">DC Prep</div>
-        <div class="hdr-title">Ops Dashboard</div>
-      </div>
-      <button class="back-btn" id="back-btn" onclick="goHome()">← Back</button>
+    <div>
+      <div class="hdr-brand">DC Prep</div>
+      <div class="hdr-title">BOY Readiness Dashboard</div>
+      <div class="hdr-meta" id="hdr-meta">SY 2026–27</div>
     </div>
-    <div class="section-title-hdr" id="section-title-hdr"></div>
-    <div class="hdr-meta" id="hdr-meta"></div>
+  </div>
+  <div class="campus-tabs" id="campus-tabs">
+    <div class="campus-tab sep active" onclick="showTab('overall',this)">All</div>
+    <div class="campus-tab" onclick="showTab('BEC',this)">BEC</div>
+    <div class="campus-tab" onclick="showTab('BMC',this)">BMC</div>
+    <div class="campus-tab" onclick="showTab('AEC',this)">AEC</div>
+    <div class="campus-tab" onclick="showTab('AMC',this)">AMC</div>
+    <div class="campus-tab" onclick="showTab('EEC',this)">EEC</div>
+    <div class="campus-tab" onclick="showTab('EMC',this)">EMC</div>
   </div>
 </div>
 
-<!-- ── HOME ── -->
-<div class="home-screen" id="screen-home">
-  <div id="home-loading" class="loading">
-    <div class="loading-ring-wrap">
-      <div class="loading-ring"></div>
-      <img src="icon.png" alt="" class="loading-icon">
+<!-- legend moved inline to campus tab panels -->
+
+<!-- ── Overall Status panel ── -->
+<div id="panel-overall" class="tab-panel active">
+  <div class="main" id="overall-main">
+    <div class="empty-msg">
+      <div class="loading-ring-wrap">
+        <div class="loading-ring"></div>
+        <img src="icon.png" alt="" class="loading-icon">
+      </div>
+      <div>Loading…</div>
     </div>
-    <div class="loading-text">Loading dashboard data…</div>
   </div>
-  <div class="home-grid" id="home-grid" style="display:none">
-
-    <div class="home-card" onclick="showSection('readiness')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 19h-3a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1"/>
-          <path d="M11 16m0 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">BOY Building Readiness</div>
-        <div class="home-card-sub" id="sub-readiness">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
-    <div class="home-card" onclick="showSection('arrival')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v5"/>
-          <circle cx="16" cy="17" r="2"/><circle cx="7" cy="17" r="2"/>
-          <path d="M5 17H3m14 0h2m-4 0H9"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">Arrival &amp; Dismissal</div>
-        <div class="home-card-sub" id="sub-arrival">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
-    <div class="home-card" onclick="showSection('custodial')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 10m0 2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z"/>
-          <path d="M6 10v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4"/>
-          <path d="M15 7h.01"/><path d="M18 9h.01"/><path d="M18 5h.01"/>
-          <path d="M21 3h.01"/><path d="M21 7h.01"/><path d="M21 11h.01"/>
-          <path d="M10 7h1"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">Custodial</div>
-        <div class="home-card-sub" id="sub-custodial">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
-    <div class="home-card" onclick="showSection('drills')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">Drills</div>
-        <div class="home-card-sub" id="sub-drills">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
-    <div class="home-card" onclick="showSection('transport')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#E5A810" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/>
-          <path d="M16 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0"/>
-          <path d="M4 17h-2v-11a1 1 0 0 1 1-1h14a5 7 0 0 1 5 7v5h-2m-4 0h-8"/>
-          <path d="M16 5l1.5 7h4.5"/>
-          <line x1="2" y1="10" x2="17" y2="10"/>
-          <line x1="7" y1="5" x2="7" y2="10"/>
-          <line x1="12" y1="5" x2="12" y2="10"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">Transportation Pilot</div>
-        <div class="home-card-sub" id="sub-transport">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
-  </div>
-  <div id="home-error" style="display:none"></div>
 </div>
 
-<!-- ── DETAIL SCREENS ── -->
-<div class="detail-screen" id="screen-arrival"></div>
-<div class="detail-screen" id="screen-custodial"></div>
-<div class="detail-screen" id="screen-drills"></div>
-<div class="detail-screen" id="screen-transport"></div>
-<div class="detail-screen" id="screen-readiness"></div>
+<!-- ── Campus panels (one per campus, built by JS) ── -->
+<div id="panel-BEC" class="tab-panel"></div>
+<div id="panel-BMC" class="tab-panel"></div>
+<div id="panel-AEC" class="tab-panel"></div>
+<div id="panel-AMC" class="tab-panel"></div>
+<div id="panel-EEC" class="tab-panel"></div>
+<div id="panel-EMC" class="tab-panel"></div>
 
 <script>
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIG — paste your deployed Apps Script URL here
+// ─────────────────────────────────────────────────────────────────────────────
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPbhFWpzKX6S6seb1c0QKplVM22LjZG6bkGMBnTNopry6dDr5YGtffKKR3EsFQ77n5BQ/exec';
 
-const SECTION_NAMES = {
-  arrival: 'Arrival & Dismissal',
-  custodial: 'Custodial',
-  drills: 'Drills',
-  transport: 'Transportation Pilot',
-  readiness: 'BOY Building Readiness',
-};
-
-const AD_FLAG_LABELS = {
-  'Crossing guard present': 'Crossing guard coverage',
-  'Arrival / dismissal zones free of obstructions': 'Keeping arrival/dismissal zones clear',
-  'No unauthorized vehicles in student loading zones': 'Unauthorized vehicles in loading zones',
-  'All staff members at duty posts': 'Staff coverage at duty posts',
-  'Staff members attentive — not on phones': 'Staff attentiveness during transitions',
-  'Staff behaviors support positive student behaviors and transitions': 'Staff behaviors during transitions',
-  'Staff positioned to maximize visibility of students': 'Staff positioning for visibility',
-  'Students moving with purpose, minimal crowding': 'Student movement and crowding',
-  'Drop-off / pick-up line moving efficiently': 'Drop-off / pick-up line efficiency',
-  'Students needing support identified and assisted promptly': 'Identifying students who need support',
-};
-
-let OPS = null, TRANSPORT = null, WIN = 14;
-
-// ── NAV ───────────────────────────────────────────────────────────────────────
-function showSection(name) {
-  document.getElementById('screen-home').style.display = 'none';
-  document.querySelectorAll('.detail-screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  const el = document.getElementById('screen-' + name);
-  if (el) { el.classList.add('active'); el.style.display = ''; }
-  document.getElementById('back-btn').classList.add('visible');
-  const th = document.getElementById('section-title-hdr');
-  th.textContent = SECTION_NAMES[name] || '';
-  th.classList.add('visible');
-  window.scrollTo(0, 0);
-  render(name);
+function loadingBlock(msg) {
+  return '<div class="empty-msg"><div class="loading-ring-wrap"><div class="loading-ring"></div><img src="icon.png" alt="" class="loading-icon"></div><div>' + msg + '</div></div>';
 }
 
-function goHome() {
-  document.querySelectorAll('.detail-screen').forEach(s => {
-    s.classList.remove('active'); s.style.display = 'none';
-  });
-  document.getElementById('screen-home').style.display = '';
-  document.getElementById('back-btn').classList.remove('visible');
-  document.getElementById('section-title-hdr').classList.remove('visible');
-  window.scrollTo(0, 0);
-}
-
-function render(name) {
-  if (!OPS) return;
-  if (name === 'arrival')   renderArrival();
-  if (name === 'custodial') renderCustodial();
-  if (name === 'drills')    renderDrills();
-  if (name === 'transport') renderTransport();
-  if (name === 'readiness') renderReadiness();
-}
-
-const READINESS_CAMPUSES = ['AEC','AMC','BEC','BMC','EEC','EMC'];
-let BOY = {};
-
-// ── LOAD DATA ─────────────────────────────────────────────────────────────────
-async function loadAll() {
-  try {
-    const [ops, transport, ...boyResults] = await Promise.all([
-      fetch(SCRIPT_URL + '?view=ops').then(r => r.json()),
-      fetch(SCRIPT_URL + '?view=transport').then(r => r.json()).catch(() => null),
-      ...READINESS_CAMPUSES.map(code => fetch(`${SCRIPT_URL}?view=boy&campus=${code}`).then(r => r.json()).catch(() => ({rooms:[]}))),
-    ]);
-    OPS = ops; TRANSPORT = transport; WIN = ops.window || 14;
-    BOY = {};
-    READINESS_CAMPUSES.forEach((code,i) => { BOY[code] = boyResults[i]; });
-    document.getElementById('home-loading').style.display = 'none';
-    document.getElementById('home-grid').style.display = '';
-    document.getElementById('hdr-meta').textContent = ops.generated || '';
-    buildSubtitles();
-  } catch(err) {
-    document.getElementById('home-loading').style.display = 'none';
-    const eb = document.getElementById('home-error');
-    eb.style.display = '';
-    eb.innerHTML = '<div class="error-box"><strong>Could not load data.</strong><br>' + err.message + '</div>';
-  } finally {
-    const overlay = document.getElementById('app-loading-overlay');
-    if (overlay) overlay.classList.add('hidden');
-  }
-}
-
-function buildSubtitles() {
-  // Arrival
-  const arrCluster = (OPS.arrival || [])[0];
-  const arrN = (arrCluster?.arrival?.current?.n || 0) + (arrCluster?.dismissal?.current?.n || 0);
-  document.getElementById('sub-arrival').textContent = arrN + ' obs in last ' + WIN + ' days';
-
-  // Custodial
-  const custCluster = (OPS.custodial || [])[0];
-  const pct = custCluster?.currentPct;
-  document.getElementById('sub-custodial').textContent = pct !== null && pct !== undefined ? pct + '% items checked this period' : 'No walkthroughs logged';
-
-  // Drills
-  const lastDrillDates = (OPS.drills?.lastDrills || []).flatMap(d => [d.evac?.date, d.lock?.date]).filter(Boolean);
-  document.getElementById('sub-drills').textContent = lastDrillDates.length ? 'Last drill: ' + lastDrillDates[0] : 'No drills logged yet';
-
-  // Transport
-  if (TRANSPORT?.routes?.length) {
-    const r = TRANSPORT.routes[0];
-    document.getElementById('sub-transport').textContent = r.daysLogged + '% days logged · ' + r.handoffsConfirmed + '% handoffs confirmed';
-  } else {
-    document.getElementById('sub-transport').textContent = 'No trip data yet';
-  }
-
-  // Readiness (BOY Building Readiness — signoff progress across all spaces, all campuses)
-  let rTotal = 0, rDone = 0;
-  READINESS_CAMPUSES.forEach(code => {
-    const rooms = (BOY[code] && BOY[code].rooms) || [];
-    rooms.forEach(r => {
-      ['SDO','tech'].forEach(track => {
-        const rec = track === 'tech' ? r.tech : r[track];
-        const cls = dotClass(rec ? rec.assessment : null);
-        if (cls === 'rdot-na') return;
-        rTotal++;
-        if (cls === 'rdot-ok' || cls === 'rdot-minor') rDone++;
-      });
-    });
-  });
-  document.getElementById('sub-readiness').textContent =
-    rTotal ? `${Math.round(rDone/rTotal*100)}% of signoffs complete` : 'No assessments logged yet';
-}
-
-// ── RENDER DRILLS ─────────────────────────────────────────────────────────────
-function renderDrills() {
-  const con = document.getElementById('screen-drills');
-  const months = OPS.drills?.months || [];
-  const syStart = OPS.drills?.syStart || new Date().getFullYear();
-  const today = new Date();
-
-  function dots(statuses) {
-    return months.map((m, mi) => {
-      const yr = m.num >= 8 ? syStart : syStart + 1;
-      const past = new Date(yr, m.num - 1, 1) < today;
-      const st = statuses?.[mi] || 'none';
-      const cls = !past ? 'dot-future' : st === 'ok' ? 'dot-ok' : st === 'slow' ? 'dot-slow' : 'dot-none';
-      const sym = !past ? '' : (st === 'ok' || st === 'slow') ? '✓' : '!';
-      return `<div class="month-cell"><div class="month-lbl">${m.label}</div><div class="dot ${cls}">${sym}</div></div>`;
-    }).join('');
-  }
-
-  const CAMPUSES = ['AEC','AMC','BEC','BMC','EEC','EMC'];
-  let html = '';
-
-  CAMPUSES.forEach((campus, ci) => {
-    const comp = (OPS.drills?.compliance || []).find(d => d.campus === campus);
-    const last = (OPS.drills?.lastDrills  || []).find(d => d.campus === campus);
-
-    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:${ci===0?'4px':' 40px'} 0 14px">${campus}</div>`;
-
-    // Evacuation — own card
-    html += `<div class="section" style="margin-bottom:10px">
-      <div class="drill-type-label">Evacuation</div>
-      <div class="month-row">${dots(comp?.evac)}</div>
-    </div>`;
-
-    // Lockdown — own card
-    html += `<div class="section" style="margin-bottom:10px">
-      <div class="drill-type-label">Lockdown</div>
-      <div class="month-row">${dots(comp?.lock)}</div>
-    </div>`;
-
-    // Most recent — label outside, each drill in its own white card
-    html += `<div style="font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:16px 0 10px">Most recent drills</div>`;
-    ['evac','lock'].forEach(type => {
-      const drill = last?.[type];
-      const label = type === 'evac' ? 'Evacuation' : 'Lockdown';
-      html += `<div class="section" style="margin-bottom:10px">`;
-      html += `<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px">${label}</div>`;
-      if (!drill) {
-        html += `<div class="no-data">No drill logged yet</div>`;
-      } else {
-        const dc = drill.under10 ? 'ok' : 'warn';
-        const flagLines = drill.flags ? drill.flags.split(';').map(f=>f.trim()).filter(Boolean) : [];
-        html += `<div class="stat-line"><span class="stat-key">Date</span><span class="stat-val">${drill.date}</span></div>`;
-        html += `<div class="stat-line"><span class="stat-key">Duration</span><span class="stat-val ${dc}">${drill.duration}${drill.under10?' ✓':' — over goal'}</span></div>`;
-        if (flagLines.length) {
-          html += `<div class="stat-line" style="align-items:flex-start"><span class="stat-key">Improvement opportunities</span><span class="stat-val flag" style="display:flex;flex-direction:column;gap:3px">${flagLines.map(f=>`<span>${f}</span>`).join('')}</span></div>`;
-        } else {
-          html += `<div class="stat-line"><span class="stat-key">Improvement opportunities</span><span class="stat-val ok">None flagged</span></div>`;
-        }
-      }
-      html += `</div>`;
-    });
-  });
-
-  con.innerHTML = html;
-}
-
-// ── RENDER ARRIVAL ────────────────────────────────────────────────────────────
-const RATINGS = [
-  {label:'Strong',    key:'strong',   color:'#1d9e75'},
-  {label:'OK',        key:'ok',       color:'#2a78d6'},
-  {label:'Needs work',key:'needsWork',color:'#e24b4a'},
+// Campus metadata
+const CAMPUSES = [
+  {code:'BEC', name:'Benning Elementary'},
+  {code:'BMC', name:'Benning Middle'},
+  {code:'AEC', name:'Anacostia Elementary'},
+  {code:'AMC', name:'Anacostia Middle'},
+  {code:'EEC', name:'Edgewood Elementary'},
+  {code:'EMC', name:'Edgewood Middle'},
 ];
 
-function ratingTable(curr, prior) {
-  let t = `<table class="r-table"><thead><tr>
-    <th style="text-align:left;width:80px"></th><th style="text-align:left"></th>
-    <th style="text-align:right;width:36px;font-size:9px;color:var(--muted)">Last</th>
-    <th style="width:8px"></th>
-    <th style="text-align:right;width:36px;font-size:9px;color:var(--muted)">Prior</th>
-    <th style="text-align:right;width:32px;font-size:9px;color:var(--muted)">Δ</th>
-  </tr></thead><tbody>`;
-  RATINGS.forEach((r, ri) => {
-    const cp = curr[r.key] || 0, pp = prior ? (prior[r.key] || 0) : null;
-    const d = pp !== null ? cp - pp : null;
-    const ds = d === null ? '—' : d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '0';
-    const dc = d === null || d === 0 ? 'var(--muted)' : r.key === 'needsWork' ? (d > 0 ? 'var(--red)' : '#0f6e56') : (d > 0 ? '#0f6e56' : 'var(--red)');
-    t += `<tr><td style="font-size:12px;padding:7px 10px 7px 0;vertical-align:middle">${r.label}</td>
-      <td style="padding:7px 10px 7px 0;vertical-align:middle"><div class="bar-track"><div class="bar-fill" style="width:${cp}%;background:${r.color}"></div></div></td>
-      <td style="font-size:12px;font-weight:500;color:var(--navy);text-align:right;vertical-align:middle">${cp}%</td>
-      <td style="font-size:11px;color:var(--border);text-align:center;padding:0 2px;vertical-align:middle">·</td>
-      <td style="font-size:11px;color:var(--muted);text-align:right;vertical-align:middle">${pp !== null ? pp + '%' : '—'}</td>
-      <td style="font-size:11px;text-align:right;vertical-align:middle;color:${dc}">${ds}</td>
-    </tr>`;
-  });
-  return t + '</tbody></table>';
+// Section order — Apps Script groups rooms into these sections via the
+// "Section" column in All Spaces. Match those exact strings here.
+const SECTION_ORDER = ['Classrooms','Shared Student Spaces','Restrooms','Common Spaces','Offices','Staff Common Spaces','Technology'];
+
+// ── Data sources ──────────────────────────────────────────────────────────────
+// MDS / SDO statuses come from boy-readiness submissions (getBOYReadiness).
+// Tech status comes from the All Spaces tab col G (Tech helper column) which you
+// maintain. The Apps Script getBOYReadiness already returns a `tech` field per
+// room once that column is wired up; for now it falls back to null (not assessed).
+//
+// Classroom readiness (MDS) for classroom-section rooms additionally reads from
+// the legacy `readiness` flow (Classroom Readiness tab) via getBOYReadiness —
+// the Apps Script already merges those into the MDS field for classroom rows.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Dot helpers ───────────────────────────────────────────────────────────────
+function dotClass(assessment) {
+  if (!assessment) return 'dot-blank';
+  const a = assessment.toLowerCase();
+  if (a.includes('pending sdo signoff')) return 'dot-pending';
+  if (a.includes('fully'))  return 'dot-ok';
+  if (a.includes('minor'))  return 'dot-minor';
+  if (a.includes('not ready')) return 'dot-bad';
+  if (a === 'n/a' || a === 'na') return 'dot-na';
+  if (a === 'ready') return 'dot-ok';           // Tech: "Ready"
+  if (a === 'issues') return 'dot-bad';          // Tech: "Issues"
+  if (a === 'resolved') return 'dot-ok';         // Tech: "Resolved"
+  return 'dot-blank';
 }
 
-function renderArrival() {
-  const con = document.getElementById('screen-arrival');
-  let html = '';
-  (OPS.arrival || []).forEach(cl => {
-    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:28px 0 14px">${cl.cluster}</div>`;
-    ['arrival','dismissal'].forEach(session => {
-      const sData = cl[session], curr = sData?.current, prior = sData?.prior;
-      const label = session === 'arrival' ? 'Arrival' : 'Dismissal';
-      const hcls  = session === 'arrival' ? 'arr' : 'dis';
-      html += `<div class="section" style="margin-bottom:10px">`;
-      html += `<div class="session-hdr ${hcls}" style="margin-bottom:12px">${label}</div>`;
-      if (!curr || curr.n === 0) {
-        html += `<div class="no-data">No ${label.toLowerCase()} observations in the last ${WIN} days.</div>`;
-      } else {
-        const low = curr.n < 5;
-        html += ratingTable(curr, prior);
-        html += `<div class="n-lbl" style="color:${low?'#b45309':'var(--muted)'}">n = ${curr.n} (last ${WIN} days)${prior?' · n = '+prior.n+' (prior)':''}${low?' ⚠ low volume':''}</div>`;
-        if (sData.flags?.length) {
-          html += `<div class="flags-title">Improvement opportunities</div>`;
-          sData.flags.forEach(f => {
-            html += `<div class="flag-item"><span class="flag-name">${AD_FLAG_LABELS[f.item]||f.item}</span><span class="flag-pct">${f.rate}%</span></div>`;
-          });
-        }
-      }
-      html += `</div>`;
-    });
-  });
-  con.innerHTML = html || '<div class="section"><div class="no-data">No data available.</div></div>';
+function dotLabel(cls) {
+  if (cls === 'dot-ok')    return '✓';
+  if (cls === 'dot-minor') return '';
+  if (cls === 'dot-bad')   return '!';
+  if (cls === 'dot-na')    return '—';
+  if (cls === 'dot-pending') return '';
+  return '';
 }
 
-// ── RENDER CUSTODIAL ──────────────────────────────────────────────────────────
-function renderCustodial() {
-  const con = document.getElementById('screen-custodial');
-  let html = '';
-  (OPS.custodial || []).forEach(cl => {
-    const pct = cl.currentPct, prev = cl.priorPct;
-    const cw = cl.window || WIN;
-    const pc = pct === null ? 'var(--muted)' : pct >= 80 ? 'var(--teal)' : pct >= 65 ? 'var(--amber)' : 'var(--red)';
-    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:24px 0 14px">${cl.cluster}</div>`;
-    html += `<div class="section">`;
-    html += `<div class="pct-big" style="color:${pc}">${pct !== null ? pct + '%' : '—'}</div>`;
-    html += `<div style="font-size:11px;color:var(--muted);margin-top:4px">${cl.n > 0 ? 'Based on ' + cl.n + ' walkthrough' + (cl.n>1?'s':'') + ' in last ' + cw + ' days' : 'No walkthroughs in this period'}</div>`;
-    if (prev !== null && pct !== null) {
-      const d = pct - prev, a = d >= 3 ? '↑' : d <= -3 ? '↓' : '→', ac = d >= 3 ? 'var(--teal)' : d <= -3 ? 'var(--amber)' : 'var(--muted)';
-      html += `<div style="font-size:12px;color:var(--muted);margin-top:4px">${a} from <span style="color:${ac}">${prev}%</span> prior period</div>`;
-    }
-    const sparks = (cl.trend||[]).map(m => {
-      if (m.pct === null) return `<div class="spark-bar spark-null" style="height:20%"></div>`;
-      const cls = m.pct >= 80 ? 'spark-good' : m.pct >= 65 ? 'spark-mid' : 'spark-low';
-      return `<div class="spark-bar ${cls}" style="height:${Math.max(20,m.pct)}%" title="${m.label}: ${m.pct}%"></div>`;
-    }).join('');
-    const lbls = (cl.trend||[]).map(m=>`<span style="font-size:9px;color:var(--muted);flex:1;text-align:center">${m.label}</span>`).join('');
-    html += `<div class="sparkline" style="margin-top:14px">${sparks}</div><div style="display:flex;gap:3px;margin-bottom:14px">${lbls}</div>`;
-    if (cl.flags?.length) {
-      html += `<div class="flags-title" style="margin-bottom:10px">Where we can improve</div>`;
-      cl.flags.forEach(f => {
-        const item = f.item.includes(' — ') ? f.item.split(' — ')[1] : f.item;
-        const space = f.item.includes(' — ') ? f.item.split(' — ')[0] : '';
-        const bc = f.trend==='focus'?'badge-focus':f.trend==='improving'?'badge-improving':'badge-stable';
-        const bl = f.trend==='focus'?'Focus area':f.trend==='improving'?'Improving':'Stable';
-        html += `<div class="improve-item"><div style="flex:1"><span class="improve-name">${item}</span>${space?`<span style="font-size:10px;color:var(--muted);display:block;margin-top:1px">${space}</span>`:''}<span class="${bc}">${bl}</span></div><div class="improve-right"><span class="flag-rate-val">${f.curr}%</span><span class="prior-rate-val">${f.prior}% prior</span></div></div>`;
-      });
-    }
-    if (cl.notes?.length) {
-      html += `<div class="flags-title" style="margin-top:14px;margin-bottom:8px">Walkthrough notes</div>`;
-      cl.notes.forEach(n => { html += `<div style="font-size:12px;padding:6px 0;border-bottom:0.5px solid var(--border)">${n.note}</div>`; });
-    }
-    html += `</div>`;
-  });
-  con.innerHTML = html || '<div class="section"><div class="no-data">No data available.</div></div>';
+function makeDot(assessment, size) {
+  const cls = dotClass(assessment);
+  const lbl = dotLabel(cls);
+  const sz  = size || 22;
+  return `<span class="dot ${cls}" style="width:${sz}px;height:${sz}px;font-size:${Math.round(sz*0.45)}px">${lbl}</span>`;
 }
 
-// ── RENDER TRANSPORT ──────────────────────────────────────────────────────────
-let ontimeChart = null;
+// ── Table builder ─────────────────────────────────────────────────────────────
+const INLINE_LEGEND = `
+  <div style="display:flex;align-items:center;gap:14px;padding:10px 0 16px;flex-wrap:wrap">
+    <span style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase">Status</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)"><span class="dot dot-ok" style="width:18px;height:18px;font-size:9px">✓</span> Fully ready</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)"><span class="dot dot-pending" style="width:18px;height:18px;font-size:9px"></span> Pending SDO signoff</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)"><span class="dot dot-minor" style="width:18px;height:18px;font-size:9px"></span> Minor items</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)"><span class="dot dot-bad" style="width:18px;height:18px;font-size:9px">!</span> Not ready</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)"><span class="dot dot-blank" style="width:18px;height:18px"></span> Not assessed</span>
+    <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)"><span class="dot dot-na" style="width:18px;height:18px;font-size:8px">—</span> N/A</span>
+  </div>`;
 
-function renderTransport() {
-  const con = document.getElementById('screen-transport');
-  if (!TRANSPORT || !TRANSPORT.routes?.length) {
-    con.innerHTML = '<div class="section"><div class="no-data">No transportation data available yet.</div></div>';
-    return;
-  }
+function buildSectionedTables(rooms) {
+  const groups = {};
+  rooms.forEach(r => {
+    const sec = r.section || 'Other';
+    if (!groups[sec]) groups[sec] = [];
+    groups[sec].push(r);
+  });
 
-  let html = '';
-  TRANSPORT.routes.forEach(route => {
-    // Top metrics
-    html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:20px">${route.label}</div>`;
-     html += `<div class="section"><div class="metric-table">
-         <div class="metric-lbl">Avg ridership</div>
-         <div class="metric-lbl">Days logged</div>
-         <div class="metric-lbl">Handoffs confirmed same day</div>
-         <div class="metric-val-t">${route.avgRidership ?? '—'} <span style="font-size:13px;font-weight:500;color:var(--muted)">of ${route.manifestSize ?? '—'}</span></div>
-         <div class="metric-val-t">${route.daysLogged ?? '—'}%</div>
-         <div class="metric-val-t">${route.handoffsConfirmed ?? '—'}%</div>
-       </div></div>`;
-     html += `<div class="section">
-       <div class="section-title">Morning · TNS → Edgewood</div>
-       <div class="metric-table">
-         <div class="metric-lbl">On-time departure</div>
-         <div class="metric-lbl">Median trip time</div>
-         <div class="metric-lbl">90% of trips under</div>
-         <div class="metric-val-t">${route.am?.onTime ?? '—'}%</div>
-         <div class="metric-val-t">${route.am?.median ?? '—'} min</div>
-         <div class="metric-val-t">${route.am?.p90 ?? '—'} min</div>
-       </div></div>`;
-     html += `<div class="section">
-       <div class="section-title">Afternoon · Edgewood → TNS</div>
-       <div class="metric-table">
-         <div class="metric-lbl">On-time departure</div>
-         <div class="metric-lbl">Median trip time</div>
-         <div class="metric-lbl">90% of trips under</div>
-         <div class="metric-val-t">${route.pm?.onTime ?? '—'}%</div>
-         <div class="metric-val-t">${route.pm?.median ?? '—'} min</div>
-         <div class="metric-val-t">${route.pm?.p90 ?? '—'} min</div>
-       </div></div>`;
+  const seenSections = new Set();
+  let html = INLINE_LEGEND;
 
-    // On-time arrival trend chart
-    html += `<div class="section">
-      <div class="section-title">On-time arrival performance</div>
-      <div class="chart-legend">
-        <span><span class="chart-swatch" style="background:#2a78d6"></span>Morning</span>
-        <span><span class="chart-swatch" style="background:var(--teal)"></span>Afternoon</span>
-      </div>
-      <div class="chart-wrap"><canvas id="transport-chart"></canvas></div>
-    </div>`;
-
-    // Issue log
-    const issues = route.issues || [];
-    html += `<div class="section">
-      <div class="section-title">Recent issue log</div>`;
-    if (!issues.length) {
-      html += `<div class="no-data">No incidents or delays logged.</div>`;
-    } else {
-      html += `<table class="issue-table">
+  const ordered = [...SECTION_ORDER, ...Object.keys(groups).filter(s => !SECTION_ORDER.includes(s))];
+  ordered.forEach(sec => {
+    if (!groups[sec] || seenSections.has(sec)) return;
+    seenSections.add(sec);
+    html += `
+    <div class="section-block">
+      <div class="section-hdr">${sec}</div>
+      <table class="space-table">
         <thead><tr>
-          <th style="width:72px">Date</th>
-          <th style="width:44px">Trip</th>
-          <th style="width:110px">Category</th>
-          <th>Notes</th>
-          <th style="width:90px">Liaison</th>
-        </tr></thead><tbody>`;
-      issues.forEach(i => {
-        const badgeCls = i.category === 'Delay' ? 'badge-danger' : i.category === 'Coverage' ? 'badge-accent' : 'badge-warn';
-        const liaisonCls = i.liaisonConfirmed === 'yes' ? 'style="color:var(--teal);font-weight:500"' : 'style="color:var(--muted)"';
-        const liaisonTxt = i.liaisonConfirmed === 'yes' ? 'Confirmed' : 'Pending';
-        html += `<tr>
-          <td>${i.date}</td>
-          <td>${i.leg?.toUpperCase()}</td>
-          <td><span class="badge ${badgeCls}">${i.category}</span></td>
-          <td class="td-trunc">${i.notes}</td>
-          <td ${liaisonCls}>${liaisonTxt}</td>
-        </tr>`;
-      });
-      html += `</tbody></table>`;
-    }
-    html += `</div>`;
+          <th>Space</th>
+          <th class="sc">Ops</th>
+          <th class="sc">Tech</th>
+        </tr></thead>
+        <tbody>`;
+    groups[sec].forEach(r => {
+      const hasCounts = sec === 'Classrooms' && (r.deskCount || r.chairCount);
+      html += `<tr${hasCounts ? ' class="tight"' : ''}>
+        <td><span class="space-name">${r.space}</span>${r.roomNumber ? ` <span class="space-room-num">(${r.roomNumber})</span>` : ''}</td>
+        <td class="sc">${makeDot(r.SDO  ? r.SDO.assessment  : null)}</td>
+        <td class="sc">${makeDot(r.tech ? r.tech.assessment : null)}</td>
+      </tr>`;
+      if (hasCounts) {
+        html += `<tr class="space-counts-row"><td colspan="3">${r.deskCount || '—'} desks · ${r.chairCount || '—'} chairs</td></tr>`;
+      }
+    });
+    html += `</tbody></table></div>`;
   });
-
-  con.innerHTML = html;
-
-  // Render Chart.js line chart
-  const chartEl = document.getElementById('transport-chart');
-  if (chartEl && TRANSPORT.routes?.[0]?.weeklyTrend) {
-    if (ontimeChart) { ontimeChart.destroy(); ontimeChart = null; }
-    const wt = TRANSPORT.routes[0].weeklyTrend;
-    ontimeChart = new Chart(chartEl, {
-      type: 'line',
-      data: {
-        labels: wt.labels,
-        datasets: [
-          { label:'Morning', data: wt.am, borderColor:'#2a78d6', backgroundColor:'#2a78d6', tension:0.3, pointRadius:4 },
-          { label:'Afternoon', data: wt.pm, borderColor:'var(--teal)', backgroundColor:'var(--teal)', tension:0.3, pointRadius:4 },
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { min:70, max:100, ticks:{ callback: v => v+'%' }, grid:{ color:'#e2e8f0' } },
-          x: { grid:{ display: false } }
-        }
-      }
-    });
-  } else if (chartEl) {
-    // Static placeholder until weekly bucketing is built in Apps Script
-    ontimeChart = new Chart(chartEl, {
-      type: 'line',
-      data: {
-        labels: ['Week 1','Week 2','Week 3','Week 4'],
-        datasets: [
-          { label:'Morning', data:[84,88,92,89], borderColor:'#2a78d6', backgroundColor:'#2a78d6', tension:0.3, pointRadius:4 },
-          { label:'Afternoon', data:[90,92,94,93], borderColor:'#0d9488', backgroundColor:'#0d9488', tension:0.3, pointRadius:4 },
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend:{ display:false } },
-        scales: {
-          y: { min:70, max:100, ticks:{ callback: v => v+'%' }, grid:{ color:'#e2e8f0' } },
-          x: { grid:{ display:false } }
-        }
-      }
-    });
-  }
+  return html || '<div class="empty-msg">No spaces found for this campus.</div>';
 }
 
-// ── READINESS ──────────────────────────────────────────────────────────────
-// NOTE: this assumes the ?view=boy&campus= API response includes, per room,
-// a `notes` field and `deskCount`/`chairCount` fields (sourced from the most
-// recent "Ops Readiness Log" entry with data) alongside the existing MDS/SDO/
-// tech assessment objects. If the Apps Script backend doesn't yet return
-// these, the notes/counts sections below will just render as empty until
-// that's added — the dot-based signoff columns will still work either way.
-const READINESS_SECTION_ORDER = ['Classrooms','Outdoor','Common Spaces','Offices & Conference Rooms','Other'];
-
-// A "space" is only Fully Ready when both tracks that apply to it are Fully
-// Ready. If one track is N/A, the other alone decides. Only ok+ok=ok, and
-// ok+minor/minor+minor=minor — anything involving bad/pending/not-assessed
-// doesn't count as either.
-function combinedSpaceStatus(room) {
-  const sdoCls  = dotClass(room.SDO  ? room.SDO.assessment  : null);
-  const techCls = dotClass(room.tech ? room.tech.assessment : null);
-  const sdoNA  = sdoCls  === 'rdot-na';
-  const techNA = techCls === 'rdot-na';
-  if (sdoNA && techNA) return 'rdot-na';
-  function simplify(cls) { return (cls === 'rdot-ok' || cls === 'rdot-minor') ? cls : null; }
-  if (sdoNA)  return simplify(techCls) || 'rdot-blank';
-  if (techNA) return simplify(sdoCls)  || 'rdot-blank';
-  const a = simplify(sdoCls), b = simplify(techCls);
-  if (a === 'rdot-ok' && b === 'rdot-ok') return 'rdot-ok';
-  if (a && b) return 'rdot-minor';
-  return 'rdot-blank';
-}
-
-function buildCampusSpaceProgress(rooms) {
+// Per-campus signoff progress: counts individual signoff cells (Schools, Ops,
+// Tech) across all rooms — not whole spaces — so partial adoption (e.g. Tech
+// keeps logging even if Ops hasn't started using the app) still shows real
+// progress. Schools/MDS is no longer part of readiness tracking.
+function buildCampusProgress(rooms) {
   let ok = 0, minor = 0, total = 0;
   rooms.forEach(r => {
     const cls = combinedSpaceStatus(r);
-    if (cls === 'rdot-na') return;
+    if (cls === 'dot-na') return;
     total++;
-    if (cls === 'rdot-ok')    ok++;
-    if (cls === 'rdot-minor') minor++;
+    if (cls === 'dot-ok')    ok++;
+    if (cls === 'dot-minor') minor++;
   });
   if (!total) return '';
   const okPct    = Math.round(ok    / total * 100);
@@ -847,77 +343,47 @@ function buildCampusSpaceProgress(rooms) {
   </div>`;
 }
 
-// ── All-tab aggregate view ──────────────────────────────────────────────────
-const CLUSTER_MAP = {AEC:'Anacostia', AMC:'Anacostia', BEC:'Benning', BMC:'Benning', EEC:'Edgewood', EMC:'Edgewood'};
-const CLUSTER_COLOR = {Anacostia:'var(--navy)', Benning:'var(--gold)', Edgewood:'var(--green)'};
-const START_DATE  = new Date(2026, 6, 30);  // Jul 30, 2026
-const TARGET_DATE = new Date(2026, 7, 18);  // Aug 18, 2026
-const FDOS_DATE   = new Date(2026, 7, 24);  // Aug 24, 2026 — First Day of School
-
-function countBusinessDays(start, end) {
-  let count = 0;
-  const d = new Date(start);
-  while (d <= end) {
-    const day = d.getDay();
-    if (day !== 0 && day !== 6) count++;
-    d.setDate(d.getDate() + 1);
+function buildOverall(allData) {
+  function networkPcts(track) {
+    let ok = 0, minor = 0, total = 0;
+    CAMPUSES.forEach(c => {
+      const d = allData[c.code];
+      if (!d) return;
+      d.rooms.forEach(r => {
+        const rec = track === 'tech' ? r.tech : r[track];
+        const cls = dotClass(rec ? rec.assessment : null);
+        if (cls === 'dot-na') return;
+        total++;
+        if (cls === 'dot-ok')    ok++;
+        if (cls === 'dot-minor') minor++;
+      });
+    });
+    return total ? { ok: Math.round(ok/total*100), minor: Math.round(minor/total*100), total, okCount: ok, needed: total - ok } : null;
   }
-  return count;
-}
 
-function networkTrackPcts(track) {
-  let ok = 0, minor = 0, total = 0;
-  READINESS_CAMPUSES.forEach(code => {
-    const rooms = (BOY[code] && BOY[code].rooms) || [];
-    rooms.forEach(r => {
-      const rec = track === 'tech' ? r.tech : r[track];
-      const cls = dotClass(rec ? rec.assessment : null);
-      if (cls === 'rdot-na') return;
-      total++;
-      if (cls === 'rdot-ok')    ok++;
-      if (cls === 'rdot-minor') minor++;
+  function networkSpacePcts() {
+    let ok = 0, minor = 0, total = 0;
+    CAMPUSES.forEach(c => {
+      const d = allData[c.code];
+      if (!d) return;
+      d.rooms.forEach(r => {
+        const cls = combinedSpaceStatus(r);
+        if (cls === 'dot-na') return;
+        total++;
+        if (cls === 'dot-ok')    ok++;
+        if (cls === 'dot-minor') minor++;
+      });
     });
-  });
-  return total ? { ok: Math.round(ok/total*100), minor: Math.round(minor/total*100), total } : null;
-}
+    return total ? { ok: Math.round(ok/total*100), minor: Math.round(minor/total*100), total, okCount: ok, needed: total - ok } : null;
+  }
 
-function networkSpacePcts() {
-  let ok = 0, minor = 0, total = 0;
-  READINESS_CAMPUSES.forEach(code => {
-    const rooms = (BOY[code] && BOY[code].rooms) || [];
-    rooms.forEach(r => {
-      const cls = combinedSpaceStatus(r);
-      if (cls === 'rdot-na') return;
-      total++;
-      if (cls === 'rdot-ok')    ok++;
-      if (cls === 'rdot-minor') minor++;
-    });
-  });
-  return total ? { ok: Math.round(ok/total*100), minor: Math.round(minor/total*100), total } : null;
-}
+  const trackMeta = [
+    {key:'SDO',  label:'Ops'},
+    {key:'tech', label:'Tech'},
+  ];
 
-function computeSpaceRemainingAll() {
-  const bySection = {};
-  let totalRemaining = 0;
-  READINESS_CAMPUSES.forEach(code => {
-    const rooms = (BOY[code] && BOY[code].rooms) || [];
-    const cluster = CLUSTER_MAP[code];
-    rooms.forEach(r => {
-      const cls = combinedSpaceStatus(r);
-      if (cls === 'rdot-na' || cls === 'rdot-ok') return;
-      const sec = r.section || 'Other';
-      if (!bySection[sec]) bySection[sec] = {Anacostia:0, Benning:0, Edgewood:0};
-      bySection[sec][cluster]++;
-      totalRemaining++;
-    });
-  });
-  return { totalRemaining, bySection };
-}
-
-function buildAllTabSummary() {
-  const trackMeta = [{key:'SDO', label:'Ops'}, {key:'tech', label:'Tech'}];
   const cardsHtml = trackMeta.map(t => {
-    const p = networkTrackPcts(t.key);
+    const p = networkPcts(t.key);
     if (!p) {
       return `<div class="signoff-row">
         <span class="signoff-label">${t.label}</span>
@@ -950,45 +416,219 @@ function buildAllTabSummary() {
     </div>`;
   }
 
-  return `<div class="net-summary">
-    ${spaceBarHtml}
-    <div class="signoffs-box">
-      <div class="signoffs-box-title">Signoffs</div>
-      ${cardsHtml}
-    </div>
-  </div>`;
+  const timestamps = CAMPUSES.map(c => allData[c.code] && allData[c.code].generated).filter(Boolean);
+  const genStr = timestamps.length ? timestamps[0] : '';
+
+  return `
+    <div class="net-summary">
+      ${spaceBarHtml}
+      <div class="signoffs-box">
+        <div class="signoffs-box-title">Signoffs</div>
+        ${cardsHtml}
+      </div>
+      ${genStr ? `<div style="font-size:11px;color:var(--muted);margin-top:16px">Updated ${genStr}</div>` : ''}
+    </div>`;
 }
 
-function buildSpaceBurndownChart(totalRemaining) {
+// A "space" is only Fully Ready when both tracks that apply to it are Fully
+// Ready. If one track is N/A for that space (e.g. Tech doesn't apply), the
+// other track alone decides. If both are N/A, the space itself is N/A.
+// Core combined-status rule, operating on raw assessment strings rather than
+// a room object — reusable both for "today" (via combinedSpaceStatus below)
+// and for historical reconstruction, where we only have a raw SDO assessment
+// string as of some past date (see buildHistoricalRemainingSeries).
+function combinedStatusFromRaw(sdoAssessment, techAssessment) {
+  const sdoCls  = dotClass(sdoAssessment);
+  const techCls = dotClass(techAssessment);
+  const sdoNA  = sdoCls  === 'dot-na';
+  const techNA = techCls === 'dot-na';
+  if (sdoNA && techNA) return 'dot-na';
+
+  // Only "ok" and "minor" are meaningful for the combined space metric —
+  // anything else (bad/pending/blank/not-assessed) just means this space
+  // isn't cleanly green or yellow yet, so it doesn't map to either.
+  function simplify(cls) { return (cls === 'dot-ok' || cls === 'dot-minor') ? cls : null; }
+
+  if (sdoNA)  return simplify(techCls) || 'dot-blank';
+  if (techNA) return simplify(sdoCls)  || 'dot-blank';
+
+  const a = simplify(sdoCls), b = simplify(techCls);
+  if (a === 'dot-ok' && b === 'dot-ok') return 'dot-ok';   // green/green
+  if (a && b) return 'dot-minor';                          // green/yellow or yellow/yellow
+  return 'dot-blank';                                      // anything involving bad/pending/not-assessed
+}
+
+function combinedSpaceStatus(room) {
+  return combinedStatusFromRaw(
+    room.SDO  ? room.SDO.assessment  : null,
+    room.tech ? room.tech.assessment : null
+  );
+}
+
+// ── Total Progress: burndown + spaces-by-category ──────────────────────────
+// NOTE: the Apps Script only returns each room's *current* status, not a
+// history of what it was on past dates — there's no persisted daily
+// snapshot to reconstruct a real trend line from. The "Actual" line below
+// can only ever plot a single true data point: today. It'll only become a
+// real multi-day trend once something (e.g. a daily Apps Script trigger)
+// starts logging "date, total remaining" to a tracking tab. Flagged in the
+// UI itself via the dashed "builds up day by day" note.
+const CLUSTER_MAP = {AEC:'Anacostia', AMC:'Anacostia', BEC:'Benning', BMC:'Benning', EEC:'Edgewood', EMC:'Edgewood'};
+const CLUSTER_COLOR = {Anacostia:'var(--blue)', Benning:'var(--gold)', Edgewood:'var(--green)'};
+const START_DATE  = new Date(2026, 6, 30);  // Jul 30, 2026
+const TARGET_DATE = new Date(2026, 7, 18);  // Aug 18, 2026
+const FDOS_DATE   = new Date(2026, 7, 24);  // Aug 24, 2026 — First Day of School
+
+function countBusinessDays(start, end) {
+  let count = 0;
+  const d = new Date(start);
+  while (d <= end) {
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) count++;
+    d.setDate(d.getDate() + 1);
+  }
+  return count;
+}
+
+// Inverse of countBusinessDays: given a 1-indexed business-day number,
+// returns the actual calendar Date it falls on.
+function businessDayToDate(start, dayIndex) {
+  let count = 0;
+  const d = new Date(start);
+  while (true) {
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) {
+      count++;
+      if (count === dayIndex) return new Date(d);
+    }
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+async function fetchReadinessHistory() {
+  const res = await fetch(`${SCRIPT_URL}?view=readinessHistory`);
+  return res.json();
+}
+
+async function fetchDailySnapshots() {
+  const res = await fetch(`${SCRIPT_URL}?view=dailySnapshots`);
+  return res.json();
+}
+
+// Prefers a real logged snapshot for any day that has one (accurate for
+// both Ops and Tech, as they actually stood that day) — falling back to the
+// Ops-only reconstruction for earlier days before snapshots started.
+function mergeWithSnapshots(reconstructedSeries, snapshotRows) {
+  const snapshotByDay = {};
+  (snapshotRows || []).forEach(s => {
+    const d = new Date(s.ts);
+    d.setHours(0,0,0,0);
+    if (d < START_DATE) return;
+    const day = countBusinessDays(START_DATE, d);
+    snapshotByDay[day] = s.totalRemaining;
+  });
+  return reconstructedSeries.map(p => ({
+    day: p.day,
+    totalRemaining: snapshotByDay.hasOwnProperty(p.day) ? snapshotByDay[p.day] : p.totalRemaining
+  }));
+}
+
+// Reconstructs "total spaces remaining" for every business day from July 30
+// through today, using each room's real historical Ops submission as of
+// that day (from the raw Ops Readiness Log) paired with its CURRENT Tech
+// status. Tech has no submission history at all — see getReadinessHistory's
+// notes in the Apps Script — so this is the Ops trend told honestly, not a
+// true historical Tech trend. Returns [{day, totalRemaining}, ...].
+function buildHistoricalRemainingSeries(allData, historyRows) {
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const lastDay = now < START_DATE ? 1 : countBusinessDays(START_DATE, now);
+
+  const byKey = {};
+  historyRows.forEach(r => {
+    const key = r.campus + '|' + r.space;
+    if (!byKey[key]) byKey[key] = [];
+    byKey[key].push({ ts: r.ts, assessment: r.assessment });
+  });
+  Object.keys(byKey).forEach(k => byKey[k].sort((a,b) => a.ts - b.ts));
+
+  const allRooms = [];
+  CAMPUSES.forEach(c => {
+    const d = allData[c.code];
+    if (!d || !d.rooms) return;
+    d.rooms.forEach(r => {
+      allRooms.push({
+        key: c.code + '|' + r.space,
+        techAssessment: r.tech ? r.tech.assessment : null
+      });
+    });
+  });
+
+  const series = [];
+  for (let day = 1; day <= lastDay; day++) {
+    const cutoff = businessDayToDate(START_DATE, day).getTime() + 24*60*60*1000 - 1; // end of that calendar day
+    let remaining = 0;
+    allRooms.forEach(room => {
+      const subs = byKey[room.key] || [];
+      let latest = null;
+      for (let i = subs.length - 1; i >= 0; i--) {
+        if (subs[i].ts <= cutoff) { latest = subs[i]; break; }
+      }
+      const cls = combinedStatusFromRaw(latest ? latest.assessment : null, room.techAssessment);
+      if (cls === 'dot-na' || cls === 'dot-ok') return;
+      remaining++;
+    });
+    series.push({ day, totalRemaining: remaining });
+  }
+  return series;
+}
+
+// Returns { totalRemaining, bySection: { sectionName: {Anacostia,Benning,Edgewood} } }
+// "Remaining" = a signoff (Operations or Tech) isn't yet confirmed Fully ready —
+// each track is counted separately, so a room can contribute up to 2 remaining
+// signoffs (one per track) if neither has been confirmed yet.
+function computeSpacesRemaining(allData) {
+  const bySection = {};
+  let totalRemaining = 0;
+  const tracks = ['SDO', 'tech'];
+  CAMPUSES.forEach(c => {
+    const d = allData[c.code];
+    if (!d || !d.rooms) return;
+    const cluster = CLUSTER_MAP[c.code];
+    d.rooms.forEach(r => {
+      tracks.forEach(track => {
+        const rec = track === 'tech' ? r.tech : r[track];
+        const cls = dotClass(rec ? rec.assessment : null);
+        if (cls === 'dot-na' || cls === 'dot-ok') return;
+        const sec = r.section || 'Other';
+        if (!bySection[sec]) bySection[sec] = {Anacostia:0, Benning:0, Edgewood:0};
+        bySection[sec][cluster]++;
+        totalRemaining++;
+      });
+    });
+  });
+  return { totalRemaining, bySection };
+}
+
+function buildBurndownChart(totalRemaining) {
   if (!totalRemaining) {
     return `<div class="progress-block">
       <div class="progress-block-title">BURNDOWN</div>
-      <div class="chart-headline"><span class="num">0</span><span class="lbl">spaces remaining — fully caught up!</span></div>
+      <div class="chart-headline"><span class="num">0</span><span class="lbl">signoff remaining — fully caught up!</span></div>
     </div>`;
   }
-  const totalDays = countBusinessDays(START_DATE, FDOS_DATE);
-  const targetDay  = countBusinessDays(START_DATE, TARGET_DATE);
-  const now = new Date();
-  now.setHours(0,0,0,0);
-  const todayDay = now < START_DATE ? 1 : Math.min(totalDays, countBusinessDays(START_DATE, now));
+  const totalDays  = countBusinessDays(START_DATE, FDOS_DATE);
+  const targetDay   = countBusinessDays(START_DATE, TARGET_DATE);
+  const todayDay    = 1; // dashboard always computes "remaining" live, as of today
 
   const L = 40, R = 620, TOP = 40, BOT = 217;
   const xStep = (R - L) / (totalDays - 1);
   const xFor  = d => (L + (d - 1) * xStep).toFixed(1);
   const yFor  = v => (BOT - (v / totalRemaining) * (BOT - TOP)).toFixed(1);
 
-  // We only have one real data point — today's live count. Rather than
-  // falsely projecting the ideal-pace line back to day 1 using today's
-  // number (which made the "Actual" dot mathematically pinned to the top
-  // gridline no matter what day it is, since it reused the same value as
-  // the y-axis's own scale), the ideal line is drawn forward FROM today:
-  // "at this pace, starting now, you would hit zero by the target date."
-  const idealEnd = Math.max(targetDay, todayDay + 1);
   let idealPts = [];
-  for (let d = todayDay; d <= totalDays; d++) {
-    const v = d <= targetDay
-      ? totalRemaining * (1 - (d - todayDay) / (idealEnd - todayDay))
-      : 0;
+  for (let d = 1; d <= totalDays; d++) {
+    const v = d <= targetDay ? totalRemaining * (1 - (d - 1) / (targetDay - 1)) : 0;
     idealPts.push(`${xFor(d)},${yFor(v)}`);
   }
 
@@ -997,10 +637,10 @@ function buildSpaceBurndownChart(totalRemaining) {
 
   return `<div class="progress-block">
     <div class="progress-block-title">BURNDOWN</div>
-    <div class="chart-headline"><span class="num">${totalRemaining}</span><span class="lbl">spaces remaining</span></div>
+    <div class="chart-headline"><span class="num">${totalRemaining}</span><span class="lbl">signoff remaining</span></div>
     <div class="chart-legend">
       <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:#94a3b8"></span>Ideal pace</span>
-      <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:var(--navy)"></span>Actual</span>
+      <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:var(--blue)"></span>Actual</span>
     </div>
     <svg viewBox="0 0 680 232" style="width:100%;height:auto" preserveAspectRatio="xMidYMid meet">
       <line x1="40" y1="40"  x2="620" y2="40"  stroke="#f1f5f9" stroke-width="1"/>
@@ -1024,6 +664,144 @@ function buildSpaceBurndownChart(totalRemaining) {
       <text x="${fdosX}" y="29" font-size="12" fill="#E5A810" text-anchor="middle" font-weight="700">SCHOOL</text>
 
       <polyline points="${idealPts.join(' ')}" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,5"/>
+      <circle cx="${todayX}" cy="${todayY}" r="5" fill="#005E9E"/>
+
+      <text x="40" y="230" font-size="10" fill="#94a3b8" text-anchor="middle">Jul 30</text>
+      <text x="${targetX}" y="230" font-size="10" fill="#64748b" text-anchor="middle" font-weight="600">Aug 18</text>
+      <text x="${fdosX}" y="230" font-size="10" fill="#94a3b8" text-anchor="middle">Aug 24</text>
+    </svg>
+  </div>`;
+}
+
+function buildSpacesLeftChart(bySection, totalRemaining) {
+  const sections = Object.entries(bySection)
+    .map(([name, counts]) => ({ name, counts, total: counts.Anacostia + counts.Benning + counts.Edgewood }))
+    .filter(s => s.total > 0)
+    .sort((a, b) => b.total - a.total);
+
+  if (!sections.length) return '';
+  const maxTotal = sections[0].total;
+
+  const rows = sections.map(s => {
+    const widthPct = (s.total / maxTotal * 100).toFixed(1);
+    const segs = ['Anacostia', 'Benning', 'Edgewood'].map(cl => {
+      const n = s.counts[cl];
+      if (!n) return '';
+      const segPct = (n / s.total * 100).toFixed(1);
+      return `<div class="cat-seg" style="width:${segPct}%;background:${CLUSTER_COLOR[cl]}">${n}</div>`;
+    }).join('');
+    return `<div class="cat-row">
+      <span class="cat-label">${s.name}</span>
+      <div class="cat-bar-outer"><div class="cat-bar-track" style="width:${widthPct}%">${segs}</div></div>
+      <span class="cat-count">${s.total}</span>
+    </div>`;
+  }).join('');
+
+  return `<div class="progress-block">
+    <div class="progress-block-title">SIGNOFFS LEFT, BY CATEGORY</div>
+    <div class="cat-legend">
+      <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--blue)"></span>Anacostia</span>
+      <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--gold)"></span>Benning</span>
+      <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--green)"></span>Edgewood</span>
+    </div>
+    ${rows}
+  </div>`;
+}
+
+// ── Spaces (combined) versions of the two charts above ─────────────────────
+// Same structure as computeSpacesRemaining/buildBurndownChart/buildSpacesLeftChart,
+// but a room only counts as "remaining" here if it's not Fully Ready by the
+// combined-space definition (see combinedSpaceStatus) rather than per-track.
+function computeSpaceRemaining(allData) {
+  const bySection = {};
+  let totalRemaining = 0;
+  CAMPUSES.forEach(c => {
+    const d = allData[c.code];
+    if (!d || !d.rooms) return;
+    const cluster = CLUSTER_MAP[c.code];
+    d.rooms.forEach(r => {
+      const cls = combinedSpaceStatus(r);
+      if (cls === 'dot-na' || cls === 'dot-ok') return;
+      const sec = r.section || 'Other';
+      if (!bySection[sec]) bySection[sec] = {Anacostia:0, Benning:0, Edgewood:0};
+      bySection[sec][cluster]++;
+      totalRemaining++;
+    });
+  });
+  return { totalRemaining, bySection };
+}
+
+function buildSpaceBurndownChart(historicalSeries) {
+  if (!historicalSeries || !historicalSeries.length) {
+    return `<div class="progress-block">
+      <div class="progress-block-title">BURNDOWN</div>
+      <div class="chart-headline"><span class="num">—</span><span class="lbl">no data yet</span></div>
+    </div>`;
+  }
+  const totalRemaining = historicalSeries[historicalSeries.length - 1].totalRemaining;
+  if (!totalRemaining) {
+    return `<div class="progress-block">
+      <div class="progress-block-title">BURNDOWN</div>
+      <div class="chart-headline"><span class="num">0</span><span class="lbl">spaces remaining — fully caught up!</span></div>
+    </div>`;
+  }
+
+  const totalDays = countBusinessDays(START_DATE, FDOS_DATE);
+  const targetDay  = countBusinessDays(START_DATE, TARGET_DATE);
+  const todayDay   = historicalSeries.length;
+  const startTotal = historicalSeries[0].totalRemaining;
+  const yMax = Math.max(...historicalSeries.map(p => p.totalRemaining), 1);
+
+  const L = 40, R = 620, TOP = 40, BOT = 217;
+  const xStep = (R - L) / (totalDays - 1);
+  const xFor  = d => (L + (d - 1) * xStep).toFixed(1);
+  const yFor  = v => (BOT - (v / yMax) * (BOT - TOP)).toFixed(1);
+
+  // Ideal pace: straight line from day 1's real starting total down to zero by target day
+  let idealPts = [];
+  for (let d = 1; d <= totalDays; d++) {
+    const v = (d <= targetDay && targetDay > 1)
+      ? startTotal * (1 - (d - 1) / (targetDay - 1))
+      : 0;
+    idealPts.push(`${xFor(d)},${yFor(v)}`);
+  }
+
+  // Actual: a real reconstructed point for every business day since Jul 30
+  const actualPts = historicalSeries.map(p => `${xFor(p.day)},${yFor(p.totalRemaining)}`);
+
+  const todayX = xFor(todayDay), targetX = xFor(targetDay), fdosX = xFor(totalDays);
+  const todayY = yFor(totalRemaining);
+
+  return `<div class="progress-block">
+    <div class="progress-block-title">BURNDOWN</div>
+    <div class="chart-headline"><span class="num">${totalRemaining}</span><span class="lbl">spaces remaining</span></div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:#94a3b8"></span>Ideal pace</span>
+      <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:var(--blue)"></span>Actual</span>
+    </div>
+    <svg viewBox="0 0 680 232" style="width:100%;height:auto" preserveAspectRatio="xMidYMid meet">
+      <line x1="40" y1="40"  x2="620" y2="40"  stroke="#f1f5f9" stroke-width="1"/>
+      <line x1="40" y1="84"  x2="620" y2="84"  stroke="#f1f5f9" stroke-width="1"/>
+      <line x1="40" y1="128" x2="620" y2="128" stroke="#f1f5f9" stroke-width="1"/>
+      <line x1="40" y1="172" x2="620" y2="172" stroke="#f1f5f9" stroke-width="1"/>
+      <line x1="40" y1="217" x2="620" y2="217" stroke="#cbd5e1" stroke-width="1.5"/>
+
+      <text x="34" y="44"  font-size="10" fill="#94a3b8" text-anchor="end">${yMax}</text>
+      <text x="34" y="221" font-size="10" fill="#94a3b8" text-anchor="end">0</text>
+
+      <line x1="${todayX}" y1="40" x2="${todayX}" y2="217" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <text x="${todayX}" y="34" font-size="12" fill="#475569" text-anchor="middle" font-weight="700">TODAY</text>
+
+      <line x1="${targetX}" y1="40" x2="${targetX}" y2="217" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+      <text x="${targetX}" y="14" font-size="12" fill="#64748b" text-anchor="middle" font-weight="700">TARGET FOR</text>
+      <text x="${targetX}" y="29" font-size="12" fill="#64748b" text-anchor="middle" font-weight="700">100% READINESS</text>
+
+      <line x1="${fdosX}" y1="40" x2="${fdosX}" y2="217" stroke="#E5A810" stroke-width="2"/>
+      <text x="${fdosX}" y="14" font-size="12" fill="#E5A810" text-anchor="middle" font-weight="700">FIRST DAY OF</text>
+      <text x="${fdosX}" y="29" font-size="12" fill="#E5A810" text-anchor="middle" font-weight="700">SCHOOL</text>
+
+      <polyline points="${idealPts.join(' ')}" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,5"/>
+      <polyline points="${actualPts.join(' ')}" fill="none" stroke="#005E9E" stroke-width="3"/>
       <circle cx="${todayX}" cy="${todayY}" r="5" fill="#005E9E"/>
 
       <text x="40" y="230" font-size="10" fill="#94a3b8" text-anchor="middle">Jul 30</text>
@@ -1060,7 +838,7 @@ function buildSpaceCategoryChart(bySection, totalRemaining) {
   return `<div class="progress-block">
     <div class="progress-block-title">SPACES LEFT, BY CATEGORY</div>
     <div class="cat-legend">
-      <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--navy)"></span>Anacostia</span>
+      <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--blue)"></span>Anacostia</span>
       <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--gold)"></span>Benning</span>
       <span class="cat-legend-item"><span class="cat-legend-swatch" style="background:var(--green)"></span>Edgewood</span>
     </div>
@@ -1068,135 +846,83 @@ function buildSpaceCategoryChart(bySection, totalRemaining) {
   </div>`;
 }
 
-let activeReadinessCampus = 'ALL';
+// ── Data fetching ─────────────────────────────────────────────────────────────
 
-function dotClass(assessment) {
-  if (!assessment) return 'rdot-blank';
-  const a = assessment.toLowerCase();
-  if (a.includes('pending sdo signoff')) return 'rdot-pending';
-  if (a.includes('fully'))  return 'rdot-ok';
-  if (a.includes('minor'))  return 'rdot-minor';
-  if (a.includes('not ready')) return 'rdot-bad';
-  if (a === 'n/a' || a === 'na') return 'rdot-na';
-  if (a === 'ready') return 'rdot-ok';
-  if (a === 'issues') return 'rdot-bad';
-  if (a === 'resolved') return 'rdot-ok';
-  return 'rdot-blank';
+// NOTE: previously cached indefinitely per session, meaning a long-open tab
+// could silently drift out of sync with reality (and with other dashboards
+// that always fetch fresh). Always fetching live now instead.
+async function fetchCampus(code) {
+  const url = `${SCRIPT_URL}?view=boy&campus=${code}`;
+  const res  = await fetch(url);
+  const data = await res.json();
+  return data;
 }
 
-function dotLabel(cls) {
-  if (cls === 'rdot-ok')    return '✓';
-  if (cls === 'rdot-minor') return '';
-  if (cls === 'rdot-bad')   return '!';
-  if (cls === 'rdot-na')    return '—';
-  if (cls === 'rdot-pending') return '';
-  return '';
-}
-
-function makeDot(assessment) {
-  const cls = dotClass(assessment);
-  return `<span class="rdot ${cls}">${dotLabel(cls)}</span>`;
-}
-
-function buildReadinessTables(rooms) {
-  const groups = {};
-  rooms.forEach(r => {
-    const sec = r.section || 'Other';
-    if (!groups[sec]) groups[sec] = [];
-    groups[sec].push(r);
-  });
-
-  let rowId = 0;
-  let html = '';
-  const seen = new Set();
-  const ordered = [...READINESS_SECTION_ORDER, ...Object.keys(groups).filter(s => !READINESS_SECTION_ORDER.includes(s))];
-
-  ordered.forEach(sec => {
-    if (!groups[sec] || seen.has(sec)) return;
-    seen.add(sec);
-    html += `<div class="section-block"><div class="section-hdr">${sec}</div><table class="space-table"><thead><tr>
-      <th></th>
-      <th>Space</th>
-      <th class="sc">Ops</th>
-      <th class="sc">Tech</th>
-    </tr></thead><tbody>`;
-    groups[sec].forEach(r => {
-      rowId++;
-      const hasNotes = !!(r.notes && r.notes.trim());
-      const isClassroom = sec === 'Classrooms';
-      const hasCounts = isClassroom && (r.deskCount || r.chairCount);
-      const expandable = hasNotes;
-      const rid = `rdrow-${rowId}`;
-
-      html += `<tr class="space-row${expandable ? ' expandable' : ''}"${expandable ? ` onclick="toggleReadinessRow('${rid}')"` : ''}>
-        <td class="space-chevron-cell">${expandable ? `<i class="ti ti-chevron-down space-chevron" id="${rid}-chev" aria-hidden="true"></i>` : ''}</td>
-        <td><span class="space-name">${r.space}</span>${r.roomNumber ? ` <span class="space-room-num">(${r.roomNumber})</span>` : ''}</td>
-        <td class="sc">${makeDot(r.SDO  ? r.SDO.assessment  : null)}</td>
-        <td class="sc">${makeDot(r.tech ? r.tech.assessment : null)}</td>
-      </tr>`;
-
-      if (expandable) {
-        const countsLine = hasCounts
-          ? `<div class="space-detail-counts">${r.deskCount || '—'} desks · ${r.chairCount || '—'} chairs</div>`
-          : '';
-        html += `<tr class="space-detail-row hidden" id="${rid}"><td colspan="4">
-          ${countsLine}
-          <div class="space-detail-notes">${r.notes}</div>
-        </td></tr>`;
-      }
-    });
-    html += `</tbody></table></div>`;
-  });
-
-  return html || '<div class="no-data">No spaces found for this campus.</div>';
-}
-
-function toggleReadinessRow(rid) {
-  const row = document.getElementById(rid);
-  const chev = document.getElementById(rid + '-chev');
-  if (!row) return;
-  const isHidden = row.classList.contains('hidden');
-  row.classList.toggle('hidden');
-  if (chev) chev.className = isHidden ? 'ti ti-chevron-up space-chevron' : 'ti ti-chevron-down space-chevron';
-}
-
-function renderReadiness() {
-  const con = document.getElementById('screen-readiness');
-  let html = `<div class="camp-tabs">`;
-  html += `<div class="camp-tab${activeReadinessCampus === 'ALL' ? ' active' : ''}" onclick="switchReadinessCampus('ALL')">All</div>`;
-  READINESS_CAMPUSES.forEach(code => {
-    html += `<div class="camp-tab${code === activeReadinessCampus ? ' active' : ''}" onclick="switchReadinessCampus('${code}')">${code}</div>`;
-  });
-  html += `</div><div id="readiness-panel"></div>`;
-  con.innerHTML = html;
-  renderReadinessPanel();
-}
-
-function renderReadinessPanel() {
-  const panel = document.getElementById('readiness-panel');
-  if (activeReadinessCampus === 'ALL') {
-    const { totalRemaining, bySection } = computeSpaceRemainingAll();
-    panel.innerHTML = buildAllTabSummary()
-      + buildSpaceBurndownChart(totalRemaining)
-      + buildSpaceCategoryChart(bySection, totalRemaining);
-    return;
+async function loadCampusPanel(code) {
+  const panel = document.getElementById(`panel-${code}`);
+  panel.innerHTML = '<div class="main">' + loadingBlock('Loading…') + '</div>';
+  try {
+    const data = await fetchCampus(code);
+    if (!data.rooms || !data.rooms.length) {
+      panel.innerHTML = '<div class="main"><div class="empty-msg">No submissions yet for ' + code + '.</div></div>';
+      return;
+    }
+    panel.innerHTML = `<div class="main">${buildCampusProgress(data.rooms)}${buildSectionedTables(data.rooms)}</div>`;
+    document.getElementById('hdr-meta').textContent = `SY 2026–27 · ${data.generated || ''}`;
+  } catch(e) {
+    panel.innerHTML = `<div class="main"><div class="empty-msg" style="color:var(--red)">Error loading ${code} data. Check the Apps Script URL.</div></div>`;
   }
-  const rooms = (BOY[activeReadinessCampus] && BOY[activeReadinessCampus].rooms) || [];
-  panel.innerHTML = rooms.length
-    ? buildCampusSpaceProgress(rooms) + buildReadinessTables(rooms)
-    : '<div class="no-data">No submissions yet for ' + activeReadinessCampus + '.</div>';
 }
 
-function switchReadinessCampus(code) {
-  activeReadinessCampus = code;
-  document.querySelectorAll('#screen-readiness .camp-tab').forEach(t => {
-    t.classList.toggle('active', t.textContent === (code === 'ALL' ? 'All' : code));
-  });
-  renderReadinessPanel();
+async function loadOverall() {
+  const el = document.getElementById('overall-main');
+  el.innerHTML = loadingBlock('Loading all campuses…');
+  try {
+    const allData = {};
+    await Promise.all(CAMPUSES.map(async c => {
+      try { allData[c.code] = await fetchCampus(c.code); }
+      catch(e) { allData[c.code] = {rooms:[], summary:{}}; }
+    }));
+    const { totalRemaining: totalSpaceRemaining, bySection: bySectionSpace } = computeSpaceRemaining(allData);
+    let historicalSeries = [];
+    try {
+      const [historyData, snapshotData] = await Promise.all([fetchReadinessHistory(), fetchDailySnapshots()]);
+      const reconstructed = buildHistoricalRemainingSeries(allData, historyData.rows || []);
+      historicalSeries = mergeWithSnapshots(reconstructed, snapshotData.rows || []);
+    } catch(e) { historicalSeries = []; }
+    el.innerHTML = buildOverall(allData)
+      + buildSpaceBurndownChart(historicalSeries)
+      + buildSpaceCategoryChart(bySectionSpace, totalSpaceRemaining);
+  } catch(e) {
+    el.innerHTML = '<div class="empty-msg" style="color:var(--red)">Error loading data.</div>';
+  } finally {
+    const overlay = document.getElementById('app-loading-overlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
 }
 
-// ── BOOT ─────────────────────────────────────────────────────────────────────
-loadAll();
+// ── Tab switching ─────────────────────────────────────────────────────────────
+const loaded = new Set();
+
+function showTab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.campus-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  el.classList.add('active');
+
+  if (!loaded.has(id)) {
+    loaded.add(id);
+    if (id === 'overall') {
+      loadOverall();
+    } else {
+      loadCampusPanel(id);
+    }
+  }
+}
+
+// ── Boot: load overall on page open ──────────────────────────────────────────
+loaded.add('overall');
+loadOverall();
 </script>
 </body>
 </html>
