@@ -213,7 +213,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cat-legend-swatch{width:10px;height:10px;border-radius:2px}
 .cat-row{display:flex;align-items:center;gap:8px;padding:9px 0}
 .cat-label{width:90px;flex-shrink:0;font-size:12px;color:var(--text);font-weight:500;line-height:1.3}
-.cat-bar-track{flex:1;height:20px;background:var(--lt);border-radius:4px;overflow:hidden;display:flex}
+.cat-bar-outer{flex:1;min-width:0}
+.cat-bar-track{height:20px;background:var(--lt);border-radius:4px;overflow:hidden;display:flex}
 .cat-seg{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700}
 .cat-count{width:34px;flex-shrink:0;text-align:right;font-size:13px;font-weight:600;color:var(--navy)}
 @media(min-width:480px){
@@ -976,9 +977,18 @@ function buildSpaceBurndownChart(totalRemaining) {
   const xFor  = d => (L + (d - 1) * xStep).toFixed(1);
   const yFor  = v => (BOT - (v / totalRemaining) * (BOT - TOP)).toFixed(1);
 
+  // We only have one real data point — today's live count. Rather than
+  // falsely projecting the ideal-pace line back to day 1 using today's
+  // number (which made the "Actual" dot mathematically pinned to the top
+  // gridline no matter what day it is, since it reused the same value as
+  // the y-axis's own scale), the ideal line is drawn forward FROM today:
+  // "at this pace, starting now, you would hit zero by the target date."
+  const idealEnd = Math.max(targetDay, todayDay + 1);
   let idealPts = [];
-  for (let d = 1; d <= totalDays; d++) {
-    const v = d <= targetDay ? totalRemaining * (1 - (d - 1) / (targetDay - 1)) : 0;
+  for (let d = todayDay; d <= totalDays; d++) {
+    const v = d <= targetDay
+      ? totalRemaining * (1 - (d - todayDay) / (idealEnd - todayDay))
+      : 0;
     idealPts.push(`${xFor(d)},${yFor(v)}`);
   }
 
@@ -1042,7 +1052,7 @@ function buildSpaceCategoryChart(bySection, totalRemaining) {
     }).join('');
     return `<div class="cat-row">
       <span class="cat-label">${s.name}</span>
-      <div class="cat-bar-track" style="flex:1 1 auto;max-width:${widthPct}%">${segs}</div>
+      <div class="cat-bar-outer"><div class="cat-bar-track" style="width:${widthPct}%">${segs}</div></div>
       <span class="cat-count">${s.total}</span>
     </div>`;
   }).join('');
