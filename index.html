@@ -821,8 +821,9 @@ function combinedStatusFromRaw(sdoAssessment, techAssessment) {
   const techNA = techCls === 'rdot-na';
   if (sdoNA && techNA) return 'rdot-na';
   function simplify(cls) { return (cls === 'rdot-ok' || cls === 'rdot-minor') ? cls : null; }
-  if (sdoNA)  return simplify(techCls) || 'rdot-blank';
-  if (techNA) return simplify(sdoCls)  || 'rdot-blank';
+  // Single-signoff spaces: minor from the one applicable track counts as ready.
+  if (sdoNA)  return simplify(techCls) ? 'rdot-ok' : 'rdot-blank';
+  if (techNA) return simplify(sdoCls)  ? 'rdot-ok' : 'rdot-blank';
   const a = simplify(sdoCls), b = simplify(techCls);
   if (a === 'rdot-ok' && b === 'rdot-ok') return 'rdot-ok';
   if (a && b) return 'rdot-minor';
@@ -930,9 +931,15 @@ function buildHistoricalRemainingSeries(historyRows) {
   now.setHours(0,0,0,0);
   const lastDay = now < START_DATE ? 1 : countBusinessDays(START_DATE, now);
 
+  // Key must match the spreadsheet's own convention (Campus|RoomNumber, only
+  // falling back to Campus|SpaceName when there's no room number) — using
+  // name alone caused generic, repeated names within the same campus (e.g.
+  // multiple "Intervention room"s or "Boys restroom"s) to have their
+  // separate submission histories merged into one, scrambling which real
+  // room each historical assessment actually belonged to.
   const byKey = {};
   historyRows.forEach(r => {
-    const key = r.campus + '|' + r.space;
+    const key = r.campus + '|' + (r.room || r.space);
     if (!byKey[key]) byKey[key] = [];
     byKey[key].push({ ts: r.ts, assessment: r.assessment });
   });
@@ -943,7 +950,7 @@ function buildHistoricalRemainingSeries(historyRows) {
     const rooms = (BOY[code] && BOY[code].rooms) || [];
     rooms.forEach(r => {
       allRooms.push({
-        key: code + '|' + r.space,
+        key: code + '|' + (r.roomNumber || r.space),
         techAssessment: r.tech ? r.tech.assessment : null
       });
     });
