@@ -825,8 +825,10 @@ function combinedStatusFromRaw(sdoAssessment, techAssessment) {
   if (sdoNA)  return simplify(techCls) ? 'rdot-ok' : 'rdot-blank';
   if (techNA) return simplify(sdoCls)  ? 'rdot-ok' : 'rdot-blank';
   const a = simplify(sdoCls), b = simplify(techCls);
-  if (a === 'rdot-ok' && b === 'rdot-ok') return 'rdot-ok';
-  if (a && b) return 'rdot-minor';
+  if (a && b) {
+    if (a === 'rdot-ok' || b === 'rdot-ok') return 'rdot-ok';  // green/green or green/yellow
+    return 'rdot-minor';                                        // yellow/yellow
+  }
   return 'rdot-blank';
 }
 
