@@ -946,29 +946,39 @@ function buildHistoricalRemainingSeries(historyRows) {
   now.setHours(0,0,0,0);
   const lastDay = now < START_DATE ? 1 : countBusinessDays(START_DATE, now);
 
-  // Key must match the spreadsheet's own convention (Campus|RoomNumber, only
-  // falling back to Campus|SpaceName when there's no room number) — using
-  // name alone caused generic, repeated names within the same campus (e.g.
-  // multiple "Intervention room"s or "Boys restroom"s) to have their
-  // separate submission histories merged into one, scrambling which real
-  // room each historical assessment actually belonged to.
-  const byKey = {};
+  // Primary index: Campus|RoomNumber, matching the spreadsheet's own Key
+  // formula. Secondary fallback index: Campus|SpaceName — used only when
+  // the room-number lookup finds nothing, which covers a room's number
+  // being assigned or changed in All Spaces after its original submission
+  // was already logged.
+  const byRoomKey = {};
+  const byNameKey = {};
   historyRows.forEach(r => {
-    // Skip counts-only submissions (no assessment set) — matches the
-    // spreadsheet's own "Latest Key With Assessment" column.
-    if (!r.assessment) return;
-    const key = r.campus + '|' + (r.room || r.space);
-    if (!byKey[key]) byKey[key] = [];
-    byKey[key].push({ ts: r.ts, assessment: r.assessment });
+    if (!r.assessment) return; // skip counts-only submissions
+    const entry = { ts: r.ts, assessment: r.assessment };
+    if (r.room) {
+      const rk = r.campus + '|' + r.room;
+      if (!byRoomKey[rk]) byRoomKey[rk] = [];
+      byRoomKey[rk].push(entry);
+    }
+    const nk = r.campus + '|' + r.space;
+    if (!byNameKey[nk]) byNameKey[nk] = [];
+    byNameKey[nk].push(entry);
   });
-  Object.keys(byKey).forEach(k => byKey[k].sort((a,b) => a.ts - b.ts));
+  Object.keys(byRoomKey).forEach(k => byRoomKey[k].sort((a,b) => a.ts - b.ts));
+  Object.keys(byNameKey).forEach(k => byNameKey[k].sort((a,b) => a.ts - b.ts));
 
   const allRooms = [];
   READINESS_CAMPUSES.forEach(code => {
     const rooms = (BOY[code] && BOY[code].rooms) || [];
     rooms.forEach(r => {
       allRooms.push({
-        key: code + '|' + (r.roomNumber || r.space),
+        roomKey: r.roomNumber ? (code + '|' + r.roomNumber) : null,
+        nameKey: code + '|' + r.space,
+        // A handful of spaces (e.g. Phone system, Network/WiFi) have "n/a"
+        // typed directly into All Spaces rather than coming from any real
+        // submission — there's no history to find for those at all.
+        liveIsNA: dotClass(r.SDO ? r.SDO.assessment : null) === 'rdot-na',
         techAssessment: r.tech ? r.tech.assessment : null
       });
     });
@@ -979,12 +989,14 @@ function buildHistoricalRemainingSeries(historyRows) {
     const cutoff = businessDayToDate(START_DATE, day).getTime() + 24*60*60*1000 - 1;
     let remaining = 0;
     allRooms.forEach(room => {
-      const subs = byKey[room.key] || [];
+      let subs = room.roomKey ? (byRoomKey[room.roomKey] || []) : [];
+      if (!subs.length) subs = byNameKey[room.nameKey] || [];
       let latest = null;
       for (let i = subs.length - 1; i >= 0; i--) {
         if (subs[i].ts <= cutoff) { latest = subs[i]; break; }
       }
-      const cls = combinedStatusFromRaw(latest ? latest.assessment : null, room.techAssessment);
+      const sdoValue = latest ? latest.assessment : (room.liveIsNA ? 'n/a' : null);
+      const cls = combinedStatusFromRaw(sdoValue, room.techAssessment);
       if (cls === 'rdot-na' || cls === 'rdot-ok') return;
       remaining++;
     });
