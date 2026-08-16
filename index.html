@@ -1099,14 +1099,15 @@ function buildAllTabSummary() {
   </div>`;
 }
 
-function buildSpaceBurndownChart(historicalSeries) {
+function buildSpaceBurndownChart(historicalSeries, liveTotal) {
   if (!historicalSeries || !historicalSeries.length) {
     return `<div class="progress-block">
       <div class="progress-block-title">BURNDOWN</div>
       <div class="chart-headline"><span class="num">—</span><span class="lbl">no data yet</span></div>
     </div>`;
   }
-  const totalRemaining = historicalSeries[historicalSeries.length - 1].totalRemaining;
+  const chartLastTotal = historicalSeries[historicalSeries.length - 1].totalRemaining;
+  const totalRemaining = (typeof liveTotal === 'number') ? liveTotal : chartLastTotal;
   if (!totalRemaining) {
     return `<div class="progress-block">
       <div class="progress-block-title">BURNDOWN</div>
@@ -1118,7 +1119,7 @@ function buildSpaceBurndownChart(historicalSeries) {
   const targetDay  = countBusinessDays(START_DATE, TARGET_DATE);
   const todayDay   = historicalSeries.length;
   const startTotal = historicalSeries[0].totalRemaining;
-  const yMax = Math.max(...historicalSeries.map(p => p.totalRemaining), 1);
+  const yMax = Math.max(...historicalSeries.map(p => p.totalRemaining), totalRemaining, 1);
 
   const L = 40, R = 620, TOP = 40, BOT = 217;
   const xStep = (R - L) / (totalDays - 1);
@@ -1138,7 +1139,8 @@ function buildSpaceBurndownChart(historicalSeries) {
   const actualPts = historicalSeries.map(p => `${xFor(p.day)},${yFor(p.totalRemaining)}`);
 
   const todayX = xFor(todayDay), targetX = xFor(targetDay), fdosX = xFor(totalDays);
-  const todayY = yFor(totalRemaining);
+  const todayY = yFor(chartLastTotal);
+  const liveDiffersFromChart = totalRemaining !== chartLastTotal;
 
   return `<div class="progress-block">
     <div class="progress-block-title">BURNDOWN</div>
@@ -1176,6 +1178,7 @@ function buildSpaceBurndownChart(historicalSeries) {
       <text x="${targetX}" y="230" font-size="10" fill="#64748b" text-anchor="middle" font-weight="600">Aug 18</text>
       <text x="${fdosX}" y="230" font-size="10" fill="#94a3b8" text-anchor="middle">Aug 24</text>
     </svg>
+    ${liveDiffersFromChart ? `<div style="font-size:11px;color:var(--muted);margin-top:8px">Chart trend reflects the last business day (${chartLastTotal} remaining) — the headline number above is live, right now.</div>` : ''}
   </div>`;
 }
 
@@ -1343,7 +1346,7 @@ async function renderReadinessPanel() {
       historicalSeries = mergeWithSnapshots(reconstructed, snapshotData.rows || []);
     } catch(e) { historicalSeries = []; }
     panel.innerHTML = buildAllTabSummary()
-      + buildSpaceBurndownChart(historicalSeries)
+      + buildSpaceBurndownChart(historicalSeries, totalRemaining)
       + buildSpaceCategoryChart(bySection, totalRemaining);
     return;
   }
