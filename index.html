@@ -142,6 +142,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .flag-item:last-child{border-bottom:none}
 .flag-name{color:var(--navy);flex:1;padding-right:10px}
 .flag-pct{color:var(--red);font-weight:500}
+.consistent-pct{color:var(--green);font-weight:500}
 .cluster-block{margin-bottom:24px}
 .cluster-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
 
@@ -285,20 +286,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   </div>
   <div class="home-grid" id="home-grid" style="display:none">
 
-    <div class="home-card" onclick="showSection('readiness')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 19h-3a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1"/>
-          <path d="M11 16m0 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">BOY Building Readiness</div>
-        <div class="home-card-sub" id="sub-readiness">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
     <div class="home-card" onclick="showSection('arrival')">
       <div class="home-card-icon">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -310,6 +297,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div>
         <div class="home-card-name">Arrival &amp; Dismissal</div>
         <div class="home-card-sub" id="sub-arrival">Loading…</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+
+    <div class="home-card" onclick="showSection('drills')">
+      <div class="home-card-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div>
+        <div class="home-card-name">Drills</div>
+        <div class="home-card-sub" id="sub-drills">Loading…</div>
       </div>
       <div class="home-card-arrow">›</div>
     </div>
@@ -331,21 +333,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="home-card-arrow">›</div>
     </div>
 
-    <div class="home-card" onclick="showSection('drills')">
-      <div class="home-card-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-      </div>
-      <div>
-        <div class="home-card-name">Drills</div>
-        <div class="home-card-sub" id="sub-drills">Loading…</div>
-      </div>
-      <div class="home-card-arrow">›</div>
-    </div>
-
     <div class="home-card" onclick="showSection('transport')">
       <div class="home-card-icon">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#E5A810" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
@@ -361,6 +348,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div>
         <div class="home-card-name">Transportation Pilot</div>
         <div class="home-card-sub" id="sub-transport">Loading…</div>
+      </div>
+      <div class="home-card-arrow">›</div>
+    </div>
+
+    <div class="home-card" onclick="showSection('readiness')">
+      <div class="home-card-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 19h-3a2 2 0 0 1-2-2v-10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1"/>
+          <path d="M11 16m0 1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="home-card-name">BOY Building Readiness</div>
+        <div class="home-card-sub" id="sub-readiness">Loading…</div>
       </div>
       <div class="home-card-arrow">›</div>
     </div>
@@ -622,6 +623,12 @@ function renderArrival() {
         const low = curr.n < 5;
         html += ratingTable(curr, prior);
         html += `<div class="n-lbl" style="color:${low?'#b45309':'var(--muted)'}">n = ${curr.n} (last ${WIN} days)${prior?' · n = '+prior.n+' (prior)':''}${low?' ⚠ low volume':''}</div>`;
+        if (sData.top?.length) {
+          html += `<div class="flags-title" style="margin-top:14px">Most consistent</div>`;
+          sData.top.forEach(t => {
+            html += `<div class="flag-item"><span class="flag-name">${AD_FLAG_LABELS[t.item]||t.item}</span><span class="consistent-pct">${t.rate}%</span></div>`;
+          });
+        }
         if (sData.flags?.length) {
           html += `<div class="flags-title">Improvement opportunities</div>`;
           sData.flags.forEach(f => {
