@@ -160,6 +160,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .badge-focus{background:var(--red-lt);color:#991b1b;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
 .badge-improving{background:var(--teal-lt);color:#005E9E;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
 .badge-stable{background:var(--lt);color:var(--muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
+.badge-new{background:var(--lt);color:var(--muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px;font-style:italic}
+.improve-n{font-size:9px;color:var(--muted);display:block;margin-top:1px}
 
 /* ── TRANSPORTATION ── */
 .metric-table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:0 8px}
@@ -667,12 +669,15 @@ function renderCustodial() {
     html += `<div class="sparkline" style="margin-top:14px">${sparks}</div><div style="display:flex;gap:3px;margin-bottom:14px">${lbls}</div>`;
     if (cl.flags?.length) {
       html += `<div class="flags-title" style="margin-bottom:10px">Where we can improve</div>`;
+      html += `<div style="font-size:10px;color:var(--muted);margin:-4px 0 8px">% of walkthroughs where the item was flagged as a problem</div>`;
       cl.flags.forEach(f => {
         const item = f.item.includes(' — ') ? f.item.split(' — ')[1] : f.item;
         const space = f.item.includes(' — ') ? f.item.split(' — ')[0] : '';
-        const bc = f.trend==='focus'?'badge-focus':f.trend==='improving'?'badge-improving':'badge-stable';
-        const bl = f.trend==='focus'?'Focus area':f.trend==='improving'?'Improving':'Stable';
-        html += `<div class="improve-item"><div style="flex:1"><span class="improve-name">${item}</span>${space?`<span style="font-size:10px;color:var(--muted);display:block;margin-top:1px">${space}</span>`:''}<span class="${bc}">${bl}</span></div><div class="improve-right"><span class="flag-rate-val">${f.curr}%</span><span class="prior-rate-val">${f.prior}% prior</span></div></div>`;
+        // 'new' = no prior-period rate to compare against yet (not the same as "unchanging").
+        const bc = f.trend==='focus'?'badge-focus':f.trend==='improving'?'badge-improving':f.trend==='new'?'badge-new':'badge-stable';
+        const bl = f.trend==='focus'?'Focus area':f.trend==='improving'?'Improving':f.trend==='new'?'New':'Stable';
+        const priorTxt = f.prior !== null && f.prior !== undefined ? `${f.prior}% prior` : 'no prior data';
+        html += `<div class="improve-item"><div style="flex:1"><span class="improve-name">${item}</span>${space?`<span style="font-size:10px;color:var(--muted);display:block;margin-top:1px">${space}</span>`:''}<span class="${bc}">${bl}</span></div><div class="improve-right"><span class="flag-rate-val">${f.curr}% flagged</span><span class="prior-rate-val">${priorTxt}</span><span class="improve-n">n = ${f.n}</span></div></div>`;
       });
     }
     if (cl.notes?.length) {
