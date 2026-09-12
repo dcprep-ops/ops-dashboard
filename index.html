@@ -14,6 +14,7 @@
 <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Ops%20Dashboard%22%2C%22short_name%22%3A%22Ops%20Dashboard%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a3a5c%22%2C%22theme_color%22%3A%22%231a3a5c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
 :root {
   --navy:#005E9E;--teal:#0083C4;--teal-lt:#E6F3FA;
@@ -147,21 +148,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cluster-label{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:14px;margin-top:24px}
 
 /* ── CUSTODIAL ── */
-.sparkline{display:flex;align-items:flex-end;gap:3px;height:44px;margin:10px 0 2px}
-.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:4px}
-.spark-good{background:var(--teal)}.spark-mid{background:var(--amber)}.spark-low{background:var(--red)}.spark-null{background:var(--border)}
-.pct-big{font-size:28px;font-weight:700}
-.improve-item{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:12px}
-.improve-item:last-child{border-bottom:none}
-.improve-name{color:var(--navy);flex:1;padding-right:10px;font-weight:500}
-.improve-right{text-align:right;flex-shrink:0}
-.flag-rate-val{font-size:14px;font-weight:700;color:var(--red)}
-.prior-rate-val{font-size:10px;color:var(--muted);display:block}
+.section-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.cust-chart-wrap{position:relative;width:100%;height:170px;margin-bottom:4px}
 .badge-focus{background:var(--red-lt);color:#991b1b;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
 .badge-improving{background:var(--teal-lt);color:#005E9E;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
 .badge-stable{background:var(--lt);color:var(--muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px}
 .badge-new{background:var(--lt);color:var(--muted);font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px;font-style:italic}
-.improve-n{font-size:9px;color:var(--muted);display:block;margin-top:1px}
+
+/* Most Consistent Items / Where We Can Improve — share one row style,
+   scoped to Custodial so it doesn't affect Arrival & Dismissal's own
+   (differently colored) flag-item rows. */
+.cust-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:0.5px solid rgba(0,0,0,.05)}
+.cust-row:last-child{border-bottom:none}
+.cust-row-name{color:var(--text);font-weight:500;flex:1;padding-right:10px}
+.cust-row-pct-good{color:var(--green);font-weight:600;flex-shrink:0}
+.cust-row-pct-bad{color:var(--red);font-weight:600;flex-shrink:0}
+
+/* Walkthrough Frequency — one combined Mon–Fri calendar, all campuses */
+.cal-table{border-collapse:collapse;width:100%}
+.cal-table th{font-size:10px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);padding:0 0 8px;text-align:center}
+.cal-table td{padding:3px;text-align:center;vertical-align:top;border-top:0.5px solid var(--border)}
+.cal-wk-lbl{font-size:9px;color:var(--muted);width:56px;text-align:left !important;padding-left:2px !important;white-space:nowrap}
+.cal-cell{min-height:38px;border-radius:6px;background:var(--lt);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;padding:3px 4px;gap:3px}
+.cal-cell.today{box-shadow:0 0 0 1.5px var(--navy) inset}
+.cal-date{font-size:9px;color:var(--muted)}
+.cal-dots{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:2px;max-width:34px}
+.cal-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.cal-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.cal-legend-swatch{width:9px;height:9px;border-radius:50%;display:inline-block}
 
 /* ── TRANSPORTATION ── */
 .metric-table{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:0 8px}
@@ -404,6 +419,10 @@ const AD_FLAG_LABELS = {
 };
 
 let OPS = null, TRANSPORT = null, WIN = 14;
+let custodialCharts = [];
+const CUSTODIAL_MONTHS = ['Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+const CUSTODIAL_BAR_COLOR = '#0083C4';
+const CUSTODIAL_WEEKDAY_COLS = ['Mon','Tue','Wed','Thu','Fri'];
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 function showSection(name) {
@@ -645,48 +664,191 @@ function renderArrival() {
 }
 
 // ── RENDER CUSTODIAL ──────────────────────────────────────────────────────────
+// Splits an item like "Cafeteria — Tables sanitized between lunches" into
+// {name, space} — custodial checklist item keys are prefixed with the
+// space they belong to; Arrival & Dismissal items never have this prefix.
+function splitCustodialItem(raw) {
+  if (raw.includes(' — ')) {
+    const [space, name] = raw.split(' — ');
+    return { name, space };
+  }
+  return { name: raw, space: '' };
+}
+
 function renderCustodial() {
   const con = document.getElementById('screen-custodial');
+  custodialCharts.forEach(c => c && c.destroy());
+  custodialCharts = [];
+
   let html = '';
-  (OPS.custodial || []).forEach(cl => {
-    const pct = cl.currentPct, prev = cl.priorPct;
+  (OPS.custodial || []).forEach((cl, i) => {
     const cw = cl.window || WIN;
-    const pc = pct === null ? 'var(--muted)' : pct >= 80 ? 'var(--teal)' : pct >= 65 ? 'var(--amber)' : 'var(--red)';
+    const chartId = `custodial-chart-${i}`;
     html += `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:24px 0 14px">${cl.cluster}</div>`;
-    html += `<div class="section">`;
-    html += `<div class="pct-big" style="color:${pc}">${pct !== null ? pct + '%' : '—'}</div>`;
-    html += `<div style="font-size:11px;color:var(--muted);margin-top:4px">${cl.n > 0 ? 'Based on ' + cl.n + ' walkthrough' + (cl.n>1?'s':'') + ' in last ' + cw + ' days' : 'No walkthroughs in this period'}</div>`;
-    if (prev !== null && pct !== null) {
-      const d = pct - prev, a = d >= 3 ? '↑' : d <= -3 ? '↓' : '→', ac = d >= 3 ? 'var(--teal)' : d <= -3 ? 'var(--amber)' : 'var(--muted)';
-      html += `<div style="font-size:12px;color:var(--muted);margin-top:4px">${a} from <span style="color:${ac}">${prev}%</span> prior period</div>`;
+
+    // ── Bar chart: percent of walkthrough items checked, by month ──
+    html += `<div class="section">
+      <div class="section-title">Percent of Walkthrough Items Checked by Month</div>
+      <div class="section-sub">${cl.n > 0 ? 'Based on ' + cl.n + ' walkthrough' + (cl.n>1?'s':'') + ' in last ' + cw + ' days' : 'No walkthroughs in this period'}</div>
+      <div class="cust-chart-wrap"><canvas id="${chartId}"></canvas></div>
+    </div>`;
+
+    // ── Most Consistent Items ──
+    html += `<div class="section">
+      <div class="section-title" style="margin-bottom:2px">Most Consistent Items</div>
+      <div class="section-sub">Items checked off (not flagged) most often across recent walkthroughs</div>`;
+    if (cl.topConsistent?.length) {
+      cl.topConsistent.forEach(t => {
+        const { name, space } = splitCustodialItem(t.item);
+        html += `<div class="cust-row"><span class="cust-row-name">${name}${space?`<span style="font-size:10px;color:var(--muted);display:block;margin-top:1px">${space}</span>`:''}</span><span class="cust-row-pct-good">${t.rate}%</span></div>`;
+      });
+    } else {
+      html += `<div class="no-data">Not enough walkthroughs yet to identify a pattern.</div>`;
     }
-    const sparks = (cl.trend||[]).map(m => {
-      if (m.pct === null) return `<div class="spark-bar spark-null" style="height:20%"></div>`;
-      const cls = m.pct >= 80 ? 'spark-good' : m.pct >= 65 ? 'spark-mid' : 'spark-low';
-      return `<div class="spark-bar ${cls}" style="height:${Math.max(20,m.pct)}%" title="${m.label}: ${m.pct}%"></div>`;
-    }).join('');
-    const lbls = (cl.trend||[]).map(m=>`<span style="font-size:9px;color:var(--muted);flex:1;text-align:center">${m.label}</span>`).join('');
-    html += `<div class="sparkline" style="margin-top:14px">${sparks}</div><div style="display:flex;gap:3px;margin-bottom:14px">${lbls}</div>`;
+    html += `</div>`;
+
+    // ── Where we can improve (styled to match Most Consistent Items) ──
+    html += `<div class="section">
+      <div class="section-title" style="margin-bottom:2px">Where We Can Improve</div>
+      <div class="section-sub">% of walkthroughs in the last ${cw} days where the item was flagged as a problem</div>`;
     if (cl.flags?.length) {
-      html += `<div class="flags-title" style="margin-bottom:10px">Where we can improve</div>`;
-      html += `<div style="font-size:10px;color:var(--muted);margin:-4px 0 8px">% of walkthroughs where the item was flagged as a problem</div>`;
       cl.flags.forEach(f => {
-        const item = f.item.includes(' — ') ? f.item.split(' — ')[1] : f.item;
-        const space = f.item.includes(' — ') ? f.item.split(' — ')[0] : '';
+        const { name, space } = splitCustodialItem(f.item);
         // 'new' = no prior-period rate to compare against yet (not the same as "unchanging").
         const bc = f.trend==='focus'?'badge-focus':f.trend==='improving'?'badge-improving':f.trend==='new'?'badge-new':'badge-stable';
         const bl = f.trend==='focus'?'Focus area':f.trend==='improving'?'Improving':f.trend==='new'?'New':'Stable';
-        const priorTxt = f.prior !== null && f.prior !== undefined ? `${f.prior}% prior` : 'no prior data';
-        html += `<div class="improve-item"><div style="flex:1"><span class="improve-name">${item}</span>${space?`<span style="font-size:10px;color:var(--muted);display:block;margin-top:1px">${space}</span>`:''}<span class="${bc}">${bl}</span></div><div class="improve-right"><span class="flag-rate-val">${f.curr}% flagged</span><span class="prior-rate-val">${priorTxt}</span><span class="improve-n">n = ${f.n}</span></div></div>`;
+        html += `<div class="cust-row"><span class="cust-row-name">${name}${space?`<span style="font-size:10px;color:var(--muted);display:block;margin-top:1px">${space}</span>`:''}<span class="${bc}">${bl}</span></span><span class="cust-row-pct-bad">${f.curr}% flagged</span></div>`;
       });
-    }
-    if (cl.notes?.length) {
-      html += `<div class="flags-title" style="margin-top:14px;margin-bottom:8px">Walkthrough notes</div>`;
-      cl.notes.forEach(n => { html += `<div style="font-size:12px;padding:6px 0;border-bottom:0.5px solid var(--border)">${n.note}</div>`; });
+    } else {
+      html += `<div class="no-data">Nothing flagged with enough walkthroughs yet to trust the rate.</div>`;
     }
     html += `</div>`;
+
+    if (cl.notes?.length) {
+      html += `<div class="section">
+        <div class="section-title" style="margin-bottom:10px">Walkthrough Notes</div>`;
+      cl.notes.forEach(n => { html += `<div style="font-size:12px;padding:6px 0;border-bottom:0.5px solid var(--border)">${n.note}</div>`; });
+      html += `</div>`;
+    }
   });
+
+  html += buildCustodialCalendarSection();
   con.innerHTML = html || '<div class="section"><div class="no-data">No data available.</div></div>';
+
+  (OPS.custodial || []).forEach((cl, i) => {
+    custodialCharts.push(renderCustodialChart(`custodial-chart-${i}`, cl.trend || []));
+  });
+}
+
+function renderCustodialChart(canvasId, trend) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return null;
+  // trend already covers Aug–Jun (11 months) from the Apps Script feed.
+  const labels = CUSTODIAL_MONTHS;
+  const values = CUSTODIAL_MONTHS.map((m, i) => trend[i] ? trend[i].pct : null);
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: CUSTODIAL_BAR_COLOR,
+        borderRadius: 4,
+        borderSkipped: false,
+        maxBarThickness: 36,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: (c) => c.raw === null ? 'No data yet' : c.raw + '% of items checked' }
+        },
+        datalabels: {
+          anchor: 'end', align: 'end', offset: 2,
+          color: '#1e293b', font: { size: 11, weight: 700 },
+          formatter: (v) => v === null ? '' : v + '%',
+        }
+      },
+      scales: {
+        y: { display:false, min:0, max:100 },
+        x: { grid:{ display:false }, ticks:{ color:'#94a3b8', font:{size:10} } }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+// ── Walkthrough Frequency — one combined Mon–Fri calendar, all campuses ──
+// One dot per observation (colored by campus), not an aggregate count.
+function buildCustodialCalendar(events) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const byDay = {};
+  events.forEach(e => {
+    const key = e.date.toISOString().slice(0,10);
+    (byDay[key] = byDay[key] || []).push(e);
+  });
+
+  const dow = today.getDay();
+  const daysSinceMonday = (dow + 6) % 7;
+  const thisMonday = new Date(today);
+  thisMonday.setDate(thisMonday.getDate() - daysSinceMonday);
+  const firstMonday = new Date(thisMonday);
+  firstMonday.setDate(firstMonday.getDate() - 21);
+
+  const weeks = [];
+  for (let w = 0; w < 4; w++) {
+    const weekStart = new Date(firstMonday);
+    weekStart.setDate(weekStart.getDate() + w * 7);
+    const days = [];
+    for (let d = 0; d < 5; d++) {
+      const day = new Date(weekStart);
+      day.setDate(day.getDate() + d);
+      const key = day.toISOString().slice(0,10);
+      days.push({ date: day, isToday: day.getTime() === today.getTime(), items: byDay[key] || [] });
+    }
+    weeks.push({ start: days[0].date, end: days[4].date, days });
+  }
+
+  const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+  let html = `<table class="cal-table"><thead><tr><th class="cal-wk-lbl"></th>` +
+    CUSTODIAL_WEEKDAY_COLS.map(w => `<th>${w}</th>`).join('') + `</tr></thead><tbody>`;
+  weeks.forEach(week => {
+    html += `<tr><td class="cal-wk-lbl">${fmt(week.start)}–${fmt(week.end)}</td>`;
+    week.days.forEach(day => {
+      const dots = day.items.map(e => `<span class="cal-dot" style="background:${CLUSTER_COLOR[e.campus]}" title="${e.campus} — ${fmt(day.date)}"></span>`).join('');
+      html += `<td><div class="cal-cell${day.isToday ? ' today' : ''}">
+        <span class="cal-date">${day.date.getDate()}</span>
+        <div class="cal-dots">${dots}</div>
+      </div></td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table>`;
+  return html;
+}
+
+function buildCustodialCalendarSection() {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const events = (OPS.custodialCalendar || [])
+    .map(e => ({ date: new Date(e.ts), campus: e.campus }))
+    .filter(e => { e.date.setHours(0,0,0,0); const d = e.date.getDay(); return d !== 0 && d !== 6; });
+
+  const legend = Object.keys(CLUSTER_COLOR).map(c =>
+    `<span class="cal-legend-item"><span class="cal-legend-swatch" style="background:${CLUSTER_COLOR[c]}"></span>${c}</span>`).join('');
+
+  return `<div style="font-size:18px;font-weight:700;color:var(--navy);margin:24px 0 14px">Walkthrough Frequency — All Campuses</div>
+    <div class="section">
+      <div class="section-title" style="margin-bottom:2px">Walkthroughs Logged</div>
+      <div class="section-sub">Last 4 weeks</div>
+      <div class="cal-legend">${legend}</div>
+      ${buildCustodialCalendar(events)}
+    </div>`;
 }
 
 // ── RENDER TRANSPORT ──────────────────────────────────────────────────────────
