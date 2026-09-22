@@ -199,6 +199,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .chart-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .chart-legend-swatch{width:14px;height:3px;border-radius:2px}
 
+/* ── FACILITIES WORK ORDERS ── */
+.fac-stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:600px){.fac-stat-grid{grid-template-columns:repeat(4,1fr)}}
+.fac-stat-card{background:var(--lt);border-radius:10px;padding:16px}
+.fac-stat-value{font-size:24px;font-weight:700;color:var(--navy)}
+.fac-stat-label{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+.fac-stat-note{font-size:11px;color:var(--muted);margin-top:6px}
+.fac-chart-wrap{position:relative;height:280px}
+.fac-chart-wrap.tall{height:360px}
+.fac-legend-note{font-size:11px;color:var(--muted);margin-top:10px}
+.fac-trend-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:540px){.fac-trend-grid{grid-template-columns:1fr 1fr}}
+.fac-trend-card{background:var(--lt);border-radius:10px;padding:12px 14px 8px}
+.fac-trend-card-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+.fac-trend-card-wrap{position:relative;height:120px}
+
 /* ── Space Readiness Progress (per-campus) & All-tab aggregate view ── */
 .net-summary{padding:20px 0 16px;margin-bottom:24px}
 .net-summary-title{font-size:11px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:#0C447C;background:#E6F1FB;padding:8px 20px;margin:0 -20px 14px}
@@ -366,7 +382,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
       <div class="home-card-arrow">›</div>
     </div>
 
-    <div class="home-card" onclick="window.open('https://claude.ai/artifact/1eZJRSSEx7gdS8TfLqbhv9', '_blank')">
+    <div class="home-card" onclick="showSection('facilities')">
       <div class="home-card-icon">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
@@ -432,6 +448,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 <div class="detail-screen" id="screen-transport"></div>
 <div class="detail-screen" id="screen-readiness"></div>
 <div class="detail-screen" id="screen-commonspace"></div>
+<div class="detail-screen" id="screen-facilities"></div>
 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwPbhFWpzKX6S6seb1c0QKplVM22LjZG6bkGMBnTNopry6dDr5YGtffKKR3EsFQ77n5BQ/exec';
@@ -443,6 +460,7 @@ const SECTION_NAMES = {
   transport: 'Transportation Pilot',
   readiness: 'BOY Building Readiness',
   commonspace: 'Common Space Walkthrough',
+  facilities: 'Facilities Work Orders',
 };
 
 const AD_FLAG_LABELS = {
@@ -464,6 +482,15 @@ let commonSpaceCharts = [];
 const CUSTODIAL_MONTHS = ['Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
 const CUSTODIAL_BAR_COLOR = '#0083C4';
 const CUSTODIAL_WEEKDAY_COLS = ['Mon','Tue','Wed','Thu','Fri'];
+
+// ── FACILITIES WORK ORDERS ──
+// Static snapshot from the Facilities Work Orders workbook (not fed by the
+// Ops App's Google Sheet like the sections above). Swap FAC_DATA for a live
+// fetch later if the Facilities sheet becomes reachable.
+let facilitiesCharts = [];
+const FAC_CAMPUS_COLORS = { Anacostia: '#005E9E', Benning: '#0083C4', Edgewood: '#E5A810' };
+const FAC_CAT_COLORS = ['#005E9E','#0083C4','#E5A810','#16a34a','#dc2626','#7c3aed','#f59e0b','#0d9488','#be185d','#64748b','#84cc16','#f472b6'];
+const FAC_DATA = {"generated": "Sep 22, 2026 (static snapshot)", "perf": {"total_completed": 1757, "p1_completed": 48, "p1_median_days": 0.09, "curriculum_on_time_pct": 92.4}, "monthly": [{"month": "July", "Anacostia": 106, "Benning": 245, "Edgewood": 9}, {"month": "August", "Anacostia": 258, "Benning": 408, "Edgewood": 255}, {"month": "September", "Anacostia": 148, "Benning": 229, "Edgewood": 109}], "ontime": [{"tier": "Priority 1", "Anacostia": {"pct": 87.0, "yes": 20, "no": 3, "total": 23}, "Benning": {"pct": 100.0, "yes": 22, "no": 0, "total": 22}, "Edgewood": {"pct": 100.0, "yes": 1, "no": 0, "total": 1}}, {"tier": "Priority 2", "Anacostia": {"pct": 91.7, "yes": 55, "no": 5, "total": 60}, "Benning": {"pct": 84.8, "yes": 39, "no": 7, "total": 46}, "Edgewood": {"pct": 97.7, "yes": 43, "no": 1, "total": 44}}, {"tier": "Priority 3", "Anacostia": {"pct": 0.0, "yes": 0, "no": 1, "total": 1}, "Benning": {"pct": 100.0, "yes": 1, "no": 0, "total": 1}, "Edgewood": {"pct": 100.0, "yes": 11, "no": 0, "total": 11}}], "weekLabels": ["Jun 29", "Jul 06", "Jul 13", "Jul 20", "Jul 27", "Aug 03", "Aug 10", "Aug 17", "Aug 24", "Aug 31", "Sep 07", "Sep 14", "Sep 21"], "weeklySeries": {"Furniture & Fixtures": [0, 0, 34, 24, 49, 8, 75, 132, 72, 20, 16, 27, 17], "Janitorial": [0, 1, 0, 3, 6, 9, 25, 17, 33, 40, 20, 48, 18], "Building Interior": [0, 0, 30, 32, 6, 0, 27, 37, 30, 14, 9, 11, 4], "Curriculum Materials": [0, 5, 0, 2, 11, 133, 10, 7, 7, 0, 1, 4, 0], "HVAC – Temperature": [0, 0, 11, 13, 16, 1, 16, 17, 21, 24, 14, 27, 8], "Plumbing": [0, 0, 10, 5, 3, 0, 9, 0, 13, 11, 6, 11, 2], "Building Exterior": [0, 0, 3, 0, 2, 0, 5, 2, 2, 3, 1, 4, 2], "HVAC – Other": [0, 0, 0, 7, 2, 0, 1, 3, 4, 0, 1, 3, 2], "HVAC – Air Quality": [0, 0, 1, 0, 0, 0, 0, 2, 5, 3, 3, 5, 2], "Safety": [0, 0, 3, 0, 2, 2, 0, 1, 0, 0, 0, 1, 1], "Rodents & Pests": [0, 0, 0, 0, 2, 1, 0, 1, 1, 2, 1, 1, 1], "Other": [0, 1, 34, 18, 14, 1, 39, 31, 39, 22, 13, 14, 2]}, "catCampus": [{"category": "Furniture & Fixtures", "Anacostia": 135, "Benning": 262, "Edgewood": 111, "total": 508}, {"category": "Janitorial", "Anacostia": 97, "Benning": 98, "Edgewood": 64, "total": 259}, {"category": "Other", "Anacostia": 78, "Benning": 94, "Edgewood": 64, "total": 236}, {"category": "Building Interior", "Anacostia": 76, "Benning": 101, "Edgewood": 40, "total": 217}, {"category": "Curriculum Materials", "Anacostia": 60, "Benning": 81, "Edgewood": 58, "total": 199}, {"category": "HVAC – Temperature", "Anacostia": 24, "Benning": 142, "Edgewood": 4, "total": 170}, {"category": "Plumbing", "Anacostia": 21, "Benning": 43, "Edgewood": 12, "total": 76}, {"category": "Building Exterior", "Anacostia": 7, "Benning": 14, "Edgewood": 5, "total": 26}, {"category": "HVAC – Other", "Anacostia": 6, "Benning": 16, "Edgewood": 1, "total": 23}, {"category": "HVAC – Air Quality", "Anacostia": 2, "Benning": 19, "Edgewood": 1, "total": 22}, {"category": "Safety", "Anacostia": 3, "Benning": 5, "Edgewood": 3, "total": 11}, {"category": "Rodents & Pests", "Anacostia": 3, "Benning": 7, "Edgewood": 0, "total": 10}]};
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 function showSection(name) {
@@ -493,6 +520,7 @@ function goHome() {
 }
 
 function render(name) {
+  if (name === 'facilities') { renderFacilities(); return; }
   if (!OPS) return;
   if (name === 'arrival')     renderArrival();
   if (name === 'custodial')   renderCustodial();
@@ -1678,6 +1706,196 @@ function switchReadinessCampus(code) {
     t.classList.toggle('active', t.textContent === (code === 'ALL' ? 'All' : code));
   });
   renderReadinessPanel();
+}
+
+// ── RENDER FACILITIES WORK ORDERS ───────────────────────────────────────────
+// Static snapshot (see FAC_DATA above) — not part of the OPS fetch, so this
+// renders independent of loadAll()/OPS.
+function renderFacilities() {
+  const con = document.getElementById('screen-facilities');
+  facilitiesCharts.forEach(c => c && c.destroy());
+  facilitiesCharts = [];
+
+  const D = FAC_DATA, perf = D.perf;
+  const statCards = [
+    { value: perf.total_completed.toLocaleString(), label: 'Total Work Orders Completed', note: 'SY26–27 year to date' },
+    { value: perf.p1_completed.toLocaleString(), label: 'Priority 1 Work Orders Completed', note: 'SY26–27 year to date' },
+    { value: (perf.p1_median_days !== null ? perf.p1_median_days.toFixed(2) : '—'), label: 'P1 Responsiveness — Median Days to Resolution', note: 'SLA target: < 1 day' },
+    { value: (perf.curriculum_on_time_pct !== null ? perf.curriculum_on_time_pct + '%' : '—'), label: 'Curriculum Materials On-Time Delivery & Pickup', note: 'SY26–27 year to date' },
+  ];
+
+  let html = `<div class="section">
+    <div class="section-title">Performance Summary</div>
+    <div class="section-sub">SY26&ndash;27 year to date &middot; static snapshot, generated ${D.generated}</div>
+    <div class="fac-stat-grid">${statCards.map(s =>
+      `<div class="fac-stat-card"><div class="fac-stat-value">${s.value}</div><div class="fac-stat-label">${s.label}</div><div class="fac-stat-note">${s.note}</div></div>`
+    ).join('')}</div>
+  </div>`;
+
+  html += `<div class="section">
+    <div class="section-title">Monthly Work Order Volume</div>
+    <div class="section-sub">Completed work orders by campus, by month</div>
+    <div class="fac-chart-wrap"><canvas id="fac-chart-monthly"></canvas></div>
+  </div>`;
+
+  html += `<div class="section">
+    <div class="section-title">On-Time Rate by Campus</div>
+    <div class="section-sub">Share of completed work orders resolved by their target date, by priority tier</div>
+    <div class="fac-chart-wrap"><canvas id="fac-chart-ontime"></canvas></div>
+    <div class="fac-legend-note">Priority 3 has few requests with a target date (most P3 tickets have "no target"), so its on-time rate reflects a small sample — read it with that in mind.</div>
+  </div>`;
+
+  html += `<div class="section">
+    <div class="section-title">Category by Campus Breakdown</div>
+    <div class="section-sub">Completed work orders to date, by category and campus</div>
+    <div class="fac-chart-wrap tall"><canvas id="fac-chart-cat-campus"></canvas></div>
+  </div>`;
+
+  html += `<div class="section">
+    <div class="section-title">Work Order Volume by Category, Over Time</div>
+    <div class="section-sub">Completed work orders by week, July 1 &ndash; present (by date completed)</div>
+    <div class="fac-trend-grid" id="fac-category-trend-grid"></div>
+  </div>`;
+
+  con.innerHTML = html;
+
+  // ---- Monthly Volume ----
+  facilitiesCharts.push(new Chart(document.getElementById('fac-chart-monthly'), {
+    type: 'bar',
+    data: {
+      labels: D.monthly.map(m => m.month),
+      datasets: ['Anacostia','Benning','Edgewood'].map(c => ({
+        label: c,
+        data: D.monthly.map(m => m[c]),
+        backgroundColor: FAC_CAMPUS_COLORS[c],
+        borderRadius: 4,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 12 } } },
+        datalabels: {
+          anchor: 'end', align: 'top', font: { size: 10, weight: '600' }, color: '#475569',
+          formatter: v => v === 0 ? '' : v
+        },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { display: false, beginAtZero: true, grid: { display: false }, grace: '15%' }
+      }
+    },
+    plugins: [ChartDataLabels]
+  }));
+
+  // ---- On-time Rate by Campus ----
+  facilitiesCharts.push(new Chart(document.getElementById('fac-chart-ontime'), {
+    type: 'bar',
+    data: {
+      labels: D.ontime.map(r => r.tier),
+      datasets: ['Anacostia','Benning','Edgewood'].map(c => ({
+        label: c,
+        data: D.ontime.map(r => Math.round(r[c].pct)),
+        backgroundColor: FAC_CAMPUS_COLORS[c],
+        borderRadius: 4,
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 12 } } },
+        datalabels: {
+          anchor: 'end', align: 'top', font: { size: 10, weight: '600' }, color: '#475569',
+          formatter: v => v === null ? '' : Math.round(v) + '%'
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const r = D.ontime[ctx.dataIndex][ctx.dataset.label];
+              return `${ctx.dataset.label}: ${r.pct === null ? 'n/a' : Math.round(r.pct) + '%'} (${r.yes} of ${r.total})`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: { display: false, beginAtZero: true, max: 105, grid: { display: false }, grace: '10%' }
+      }
+    },
+    plugins: [ChartDataLabels]
+  }));
+
+  // ---- Category by Campus ----
+  facilitiesCharts.push(new Chart(document.getElementById('fac-chart-cat-campus'), {
+    type: 'bar',
+    data: {
+      labels: D.catCampus.map(r => r.category),
+      datasets: ['Anacostia','Benning','Edgewood'].map(c => ({
+        label: c,
+        data: D.catCampus.map(r => r[c]),
+        backgroundColor: FAC_CAMPUS_COLORS[c],
+      }))
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', align: 'end', labels: { boxWidth: 10, font: { size: 12 } } },
+        datalabels: {
+          color: '#fff', font: { size: 10, weight: '600' },
+          formatter: v => v === 0 ? '' : v
+        },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { stacked: true, display: false, beginAtZero: true, grid: { display: false } },
+        y: { stacked: true, grid: { display: false } }
+      }
+    },
+    plugins: [ChartDataLabels]
+  }));
+
+  // ---- Category Volume Over Time (weekly small multiples) ----
+  let trendCatOrder = D.catCampus.map(r => r.category);
+  trendCatOrder = trendCatOrder.filter(c => c !== 'Other').concat(trendCatOrder.filter(c => c === 'Other'));
+  const trendMax = Math.max(...Object.values(D.weeklySeries).flat());
+  const trendGrid = document.getElementById('fac-category-trend-grid');
+  trendCatOrder.forEach((cat, i) => {
+    const card = document.createElement('div');
+    card.className = 'fac-trend-card';
+    card.innerHTML = `<div class="fac-trend-card-title">${cat}</div><div class="fac-trend-card-wrap"><canvas></canvas></div>`;
+    trendGrid.appendChild(card);
+    const canvas = card.querySelector('canvas');
+    facilitiesCharts.push(new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: D.weekLabels,
+        datasets: [{
+          data: D.weeklySeries[cat],
+          borderColor: FAC_CAT_COLORS[i % FAC_CAT_COLORS.length],
+          backgroundColor: FAC_CAT_COLORS[i % FAC_CAT_COLORS.length],
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          borderWidth: 2,
+          fill: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          datalabels: { display: false },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 4 } },
+          y: { beginAtZero: true, max: Math.ceil(trendMax * 1.1), grid: { color: 'rgba(0,0,0,.06)' }, ticks: { font: { size: 9 }, maxTicksLimit: 4 } }
+        }
+      }
+    }));
+  });
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────────────
