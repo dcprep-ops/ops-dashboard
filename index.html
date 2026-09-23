@@ -550,9 +550,9 @@ const CUSTODIAL_BAR_COLOR = '#0083C4';
 const CUSTODIAL_WEEKDAY_COLS = ['Mon','Tue','Wed','Thu','Fri'];
 
 // ── FACILITIES WORK ORDERS ──
-// Static snapshot from the Facilities Work Orders workbook (not fed by the
-// Ops App's Google Sheet like the sections above). Swap FAC_DATA for a live
-// fetch later if the Facilities sheet becomes reachable.
+// Live data fetched from a separate Apps Script bound to the Facilities Work
+// Orders workbook (not the Ops App's Google Sheet used by the sections above).
+// Falls back to a last-known snapshot (FAC_FALLBACK_DATA) if that fetch fails.
 let facilitiesCharts = [];
 const FAC_CAMPUS_COLORS = { Anacostia: '#005E9E', Benning: '#0083C4', Edgewood: '#E5A810' };
 const FAC_CAT_COLORS = ['#005E9E','#0083C4','#E5A810','#16a34a','#dc2626','#7c3aed','#f59e0b','#0d9488','#be185d','#64748b','#84cc16','#f472b6'];
@@ -571,7 +571,13 @@ function facLegendMargin(px) {
     }
   };
 }
-const FAC_DATA = {"generated": "Sep 22, 2026 (static snapshot)", "perf": {"total_completed": 1757, "p1_completed": 48, "p1_median_days": 0.09, "curriculum_on_time_pct": 92.4}, "monthly": [{"month": "July", "Anacostia": 106, "Benning": 245, "Edgewood": 9}, {"month": "August", "Anacostia": 258, "Benning": 408, "Edgewood": 255}, {"month": "September", "Anacostia": 148, "Benning": 229, "Edgewood": 109}], "ontime": [{"tier": "Priority 1", "Anacostia": {"pct": 87.0, "yes": 20, "no": 3, "total": 23}, "Benning": {"pct": 100.0, "yes": 22, "no": 0, "total": 22}, "Edgewood": {"pct": 100.0, "yes": 1, "no": 0, "total": 1}}, {"tier": "Priority 2", "Anacostia": {"pct": 91.7, "yes": 55, "no": 5, "total": 60}, "Benning": {"pct": 84.8, "yes": 39, "no": 7, "total": 46}, "Edgewood": {"pct": 97.7, "yes": 43, "no": 1, "total": 44}}, {"tier": "Priority 3", "Anacostia": {"pct": 0.0, "yes": 0, "no": 1, "total": 1}, "Benning": {"pct": 100.0, "yes": 1, "no": 0, "total": 1}, "Edgewood": {"pct": 100.0, "yes": 11, "no": 0, "total": 11}}], "weekLabels": ["Jun 29", "Jul 06", "Jul 13", "Jul 20", "Jul 27", "Aug 03", "Aug 10", "Aug 17", "Aug 24", "Aug 31", "Sep 07", "Sep 14", "Sep 21"], "weeklySeries": {"Furniture & Fixtures": [0, 0, 34, 24, 49, 8, 75, 132, 72, 20, 16, 27, 17], "Janitorial": [0, 1, 0, 3, 6, 9, 25, 17, 33, 40, 20, 48, 18], "Building Interior": [0, 0, 30, 32, 6, 0, 27, 37, 30, 14, 9, 11, 4], "Curriculum Materials": [0, 5, 0, 2, 11, 133, 10, 7, 7, 0, 1, 4, 0], "HVAC – Temperature": [0, 0, 11, 13, 16, 1, 16, 17, 21, 24, 14, 27, 8], "Plumbing": [0, 0, 10, 5, 3, 0, 9, 0, 13, 11, 6, 11, 2], "Building Exterior": [0, 0, 3, 0, 2, 0, 5, 2, 2, 3, 1, 4, 2], "HVAC – Other": [0, 0, 0, 7, 2, 0, 1, 3, 4, 0, 1, 3, 2], "HVAC – Air Quality": [0, 0, 1, 0, 0, 0, 0, 2, 5, 3, 3, 5, 2], "Safety": [0, 0, 3, 0, 2, 2, 0, 1, 0, 0, 0, 1, 1], "Rodents & Pests": [0, 0, 0, 0, 2, 1, 0, 1, 1, 2, 1, 1, 1], "Other": [0, 1, 34, 18, 14, 1, 39, 31, 39, 22, 13, 14, 2]}, "catCampus": [{"category": "Furniture & Fixtures", "Anacostia": 135, "Benning": 262, "Edgewood": 111, "total": 508}, {"category": "Janitorial", "Anacostia": 97, "Benning": 98, "Edgewood": 64, "total": 259}, {"category": "Other", "Anacostia": 78, "Benning": 94, "Edgewood": 64, "total": 236}, {"category": "Building Interior", "Anacostia": 76, "Benning": 101, "Edgewood": 40, "total": 217}, {"category": "Curriculum Materials", "Anacostia": 60, "Benning": 81, "Edgewood": 58, "total": 199}, {"category": "HVAC – Temperature", "Anacostia": 24, "Benning": 142, "Edgewood": 4, "total": 170}, {"category": "Plumbing", "Anacostia": 21, "Benning": 43, "Edgewood": 12, "total": 76}, {"category": "Building Exterior", "Anacostia": 7, "Benning": 14, "Edgewood": 5, "total": 26}, {"category": "HVAC – Other", "Anacostia": 6, "Benning": 16, "Edgewood": 1, "total": 23}, {"category": "HVAC – Air Quality", "Anacostia": 2, "Benning": 19, "Edgewood": 1, "total": 22}, {"category": "Safety", "Anacostia": 3, "Benning": 5, "Edgewood": 3, "total": 11}, {"category": "Rodents & Pests", "Anacostia": 3, "Benning": 7, "Edgewood": 0, "total": 10}]};
+// Paste the deployed Apps Script web app URL here (Extensions > Apps Script
+// in the facilities synthesis spreadsheet > Deploy > New deployment > Web app).
+const FACILITIES_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS99lkrd05vz9n-Nje2KmfB-j3NSuJlEuvGZ7y_yiqbjoFFNroOU2iKUjAJi_hRP_G/exec';
+
+// Last-known snapshot — used only if the live fetch fails or the URL above
+// hasn't been configured yet, so the tab never renders blank.
+const FAC_FALLBACK_DATA = {"generated": "Sep 22, 2026 (static snapshot)", "perf": {"total_completed": 1757, "p1_completed": 48, "p1_median_days": 0.09, "curriculum_on_time_pct": 92.4}, "monthly": [{"month": "July", "Anacostia": 106, "Benning": 245, "Edgewood": 9}, {"month": "August", "Anacostia": 258, "Benning": 408, "Edgewood": 255}, {"month": "September", "Anacostia": 148, "Benning": 229, "Edgewood": 109}], "ontime": [{"tier": "Priority 1", "Anacostia": {"pct": 87.0, "yes": 20, "no": 3, "total": 23}, "Benning": {"pct": 100.0, "yes": 22, "no": 0, "total": 22}, "Edgewood": {"pct": 100.0, "yes": 1, "no": 0, "total": 1}}, {"tier": "Priority 2", "Anacostia": {"pct": 91.7, "yes": 55, "no": 5, "total": 60}, "Benning": {"pct": 84.8, "yes": 39, "no": 7, "total": 46}, "Edgewood": {"pct": 97.7, "yes": 43, "no": 1, "total": 44}}, {"tier": "Priority 3", "Anacostia": {"pct": 0.0, "yes": 0, "no": 1, "total": 1}, "Benning": {"pct": 100.0, "yes": 1, "no": 0, "total": 1}, "Edgewood": {"pct": 100.0, "yes": 11, "no": 0, "total": 11}}], "weekLabels": ["Jun 29", "Jul 06", "Jul 13", "Jul 20", "Jul 27", "Aug 03", "Aug 10", "Aug 17", "Aug 24", "Aug 31", "Sep 07", "Sep 14", "Sep 21"], "weeklySeries": {"Furniture & Fixtures": [0, 0, 34, 24, 49, 8, 75, 132, 72, 20, 16, 27, 17], "Janitorial": [0, 1, 0, 3, 6, 9, 25, 17, 33, 40, 20, 48, 18], "Building Interior": [0, 0, 30, 32, 6, 0, 27, 37, 30, 14, 9, 11, 4], "Curriculum Materials": [0, 5, 0, 2, 11, 133, 10, 7, 7, 0, 1, 4, 0], "HVAC – Temperature": [0, 0, 11, 13, 16, 1, 16, 17, 21, 24, 14, 27, 8], "Plumbing": [0, 0, 10, 5, 3, 0, 9, 0, 13, 11, 6, 11, 2], "Building Exterior": [0, 0, 3, 0, 2, 0, 5, 2, 2, 3, 1, 4, 2], "HVAC – Other": [0, 0, 0, 7, 2, 0, 1, 3, 4, 0, 1, 3, 2], "HVAC – Air Quality": [0, 0, 1, 0, 0, 0, 0, 2, 5, 3, 3, 5, 2], "Safety": [0, 0, 3, 0, 2, 2, 0, 1, 0, 0, 0, 1, 1], "Rodents & Pests": [0, 0, 0, 0, 2, 1, 0, 1, 1, 2, 1, 1, 1], "Other": [0, 1, 34, 18, 14, 1, 39, 31, 39, 22, 13, 14, 2]}, "catCampus": [{"category": "Furniture & Fixtures", "Anacostia": 135, "Benning": 262, "Edgewood": 111, "total": 508}, {"category": "Janitorial", "Anacostia": 97, "Benning": 98, "Edgewood": 64, "total": 259}, {"category": "Other", "Anacostia": 78, "Benning": 94, "Edgewood": 64, "total": 236}, {"category": "Building Interior", "Anacostia": 76, "Benning": 101, "Edgewood": 40, "total": 217}, {"category": "Curriculum Materials", "Anacostia": 60, "Benning": 81, "Edgewood": 58, "total": 199}, {"category": "HVAC – Temperature", "Anacostia": 24, "Benning": 142, "Edgewood": 4, "total": 170}, {"category": "Plumbing", "Anacostia": 21, "Benning": 43, "Edgewood": 12, "total": 76}, {"category": "Building Exterior", "Anacostia": 7, "Benning": 14, "Edgewood": 5, "total": 26}, {"category": "HVAC – Other", "Anacostia": 6, "Benning": 16, "Edgewood": 1, "total": 23}, {"category": "HVAC – Air Quality", "Anacostia": 2, "Benning": 19, "Edgewood": 1, "total": 22}, {"category": "Safety", "Anacostia": 3, "Benning": 5, "Edgewood": 3, "total": 11}, {"category": "Rodents & Pests", "Anacostia": 3, "Benning": 7, "Edgewood": 0, "total": 10}]};
 
 // ── NAV ───────────────────────────────────────────────────────────────────────
 function showSection(name) {
@@ -2016,8 +2022,26 @@ function renderFacilities() {
   const con = document.getElementById('screen-facilities');
   facilitiesCharts.forEach(c => c && c.destroy());
   facilitiesCharts = [];
+  con.innerHTML = '<div class="section"><div class="section-sub">Loading live facilities data…</div></div>';
 
-  const D = FAC_DATA, perf = D.perf;
+  fetch(FACILITIES_SCRIPT_URL)
+    .then(r => r.json())
+    .then(data => {
+      if (!data || data.error) throw new Error((data && data.error) || 'empty response');
+      renderFacilitiesWith(data, false);
+    })
+    .catch(err => {
+      console.error('Facilities live data fetch failed, showing last-known snapshot instead:', err);
+      renderFacilitiesWith(FAC_FALLBACK_DATA, true);
+    });
+}
+
+function renderFacilitiesWith(D, isFallback) {
+  const con = document.getElementById('screen-facilities');
+  facilitiesCharts.forEach(c => c && c.destroy());
+  facilitiesCharts = [];
+
+  const perf = D.perf;
   const statCards = [
     { value: perf.total_completed.toLocaleString(), label: 'Total Work Orders Completed', note: 'SY26–27 year to date' },
     { value: perf.p1_completed.toLocaleString(), label: 'Priority 1 Work Orders Completed', note: 'SY26–27 year to date' },
@@ -2027,7 +2051,7 @@ function renderFacilities() {
 
   let html = `<div class="section">
     <div class="section-title">Performance Summary</div>
-    <div class="section-sub">SY26&ndash;27 year to date &middot; static snapshot, generated ${D.generated}</div>
+    <div class="section-sub">SY26&ndash;27 year to date &middot; ${isFallback ? "snapshot (live data unavailable), generated" : "live, updated"} ${D.generated}</div>
     <div class="fac-stat-grid">${statCards.map(s =>
       `<div class="fac-stat-card"><div class="fac-stat-value">${s.value}</div><div class="fac-stat-label">${s.label}</div><div class="fac-stat-note">${s.note}</div></div>`
     ).join('')}</div>
